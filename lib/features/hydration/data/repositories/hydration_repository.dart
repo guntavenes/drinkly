@@ -11,6 +11,13 @@ class HydrationRepository {
     return _database.watchTodayEntries();
   }
 
+  Stream<List<HydrationEntry>> watchEntriesBetween({
+    required DateTime start,
+    required DateTime end,
+  }) {
+    return _database.watchEntriesBetween(start: start, end: end);
+  }
+
   Future<void> addWater({
     required int amount,
     String drinkType = 'water',

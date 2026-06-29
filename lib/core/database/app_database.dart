@@ -43,6 +43,21 @@ class AppDatabase extends _$AppDatabase {
           ]))
         .watch();
   }
+
+  Stream<List<HydrationEntry>> watchEntriesBetween({
+    required DateTime start,
+    required DateTime end,
+  }) {
+    return (select(hydrationEntries)
+          ..where((tbl) => tbl.createdAt.isBetweenValues(start, end))
+          ..orderBy([
+            (tbl) => OrderingTerm(
+              expression: tbl.createdAt,
+              mode: OrderingMode.desc,
+            ),
+          ]))
+        .watch();
+  }
 }
 
 LazyDatabase _openConnection() {
