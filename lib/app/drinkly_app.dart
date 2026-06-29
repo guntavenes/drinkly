@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
-import '../features/hydration/presentation/screens/home_screen.dart';
+import 'app_shell.dart';
 
 class DrinklyApp extends StatelessWidget {
   const DrinklyApp({super.key});
@@ -14,7 +14,7 @@ class DrinklyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
-      home: const HomeScreen(),
+      home: const AppShell(),
     );
   }
 }

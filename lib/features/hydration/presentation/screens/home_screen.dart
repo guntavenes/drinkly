@@ -5,8 +5,13 @@ import '../../../../core/theme/app_colors.dart';
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
+  static const int dailyGoal = 2500;
+  static const int currentAmount = 0;
+
   @override
   Widget build(BuildContext context) {
+    final progress = currentAmount / dailyGoal;
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -40,6 +45,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 32),
+
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(28),
@@ -54,20 +60,56 @@ class HomeScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  child: const Column(
+                  child: Column(
                     children: [
-                      Text('💧', style: TextStyle(fontSize: 64)),
-                      SizedBox(height: 16),
-                      Text(
-                        '0 ml',
-                        style: TextStyle(
-                          fontSize: 44,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.lightText,
+                      SizedBox(
+                        height: 180,
+                        width: 180,
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            SizedBox(
+                              height: 180,
+                              width: 180,
+                              child: CircularProgressIndicator(
+                                value: progress,
+                                strokeWidth: 16,
+                                backgroundColor: AppColors.primary.withValues(
+                                  alpha: 0.10,
+                                ),
+                                strokeCap: StrokeCap.round,
+                              ),
+                            ),
+                            Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text(
+                                  '💧',
+                                  style: TextStyle(fontSize: 36),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  '$currentAmount ml',
+                                  style: const TextStyle(
+                                    fontSize: 34,
+                                    fontWeight: FontWeight.w800,
+                                    color: AppColors.lightText,
+                                  ),
+                                ),
+                                Text(
+                                  '${(progress * 100).round()}%',
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.lightTextSecondary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 20),
+                      const Text(
                         'Günlük hedef: 2500 ml',
                         style: TextStyle(
                           fontSize: 16,
@@ -77,6 +119,7 @@ class HomeScreen extends StatelessWidget {
                     ],
                   ),
                 ),
+
                 const SizedBox(height: 28),
                 const Text(
                   'Hızlı ekle',
@@ -87,6 +130,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
+
                 Row(
                   children: const [
                     _QuickAddButton(amount: 250),
