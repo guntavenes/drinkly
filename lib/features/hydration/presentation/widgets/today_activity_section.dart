@@ -1,0 +1,110 @@
+import 'package:drinkly/shared/widgets/app_list_title.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+
+import '../../../../core/database/app_database.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../../shared/widgets/section_header.dart';
+import '../../data/providers/hydration_providers.dart';
+
+class TodayActivitySection extends ConsumerWidget {
+  const TodayActivitySection({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entriesAsync = ref.watch(todayHydrationEntriesProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SectionHeader(title: 'Today\'s Activity', actionText: 'View All'),
+        const SizedBox(height: 16),
+        entriesAsync.when(
+          data: (entries) {
+            if (entries.isEmpty) {
+              return const _EmptyActivity();
+            }
+
+            return Column(
+              children: [
+                for (final entry in entries.take(3)) ...[
+                  _ActivityEntryTile(entry: entry),
+                  const SizedBox(height: 12),
+                ],
+              ],
+            );
+          },
+          loading: () => const Center(
+            child: Padding(
+              padding: EdgeInsets.all(24),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          error: (error, stackTrace) => Text(
+            'Something went wrong: $error',
+            style: const TextStyle(color: Colors.red),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActivityEntryTile extends StatelessWidget {
+  const _ActivityEntryTile({required this.entry});
+
+  final HydrationEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppListTile(
+      leading: const Icon(
+        Icons.local_drink_outlined,
+        color: AppColors.primary,
+        size: 28,
+      ),
+      title: '${entry.amount} ml',
+      subtitle: _drinkTypeLabel(entry.drinkType),
+      trailing: DateFormat('HH:mm').format(entry.createdAt),
+    );
+  }
+
+  String _drinkTypeLabel(String value) {
+    switch (value) {
+      case 'water':
+        return 'Water';
+      case 'coffee':
+        return 'Coffee';
+      case 'tea':
+        return 'Tea';
+      default:
+        return value;
+    }
+  }
+}
+
+class _EmptyActivity extends StatelessWidget {
+  const _EmptyActivity();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(22),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: .92),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.primary.withValues(alpha: .08)),
+      ),
+      child: const Text(
+        'No drinks added yet. Start with a quick add.',
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppColors.lightTextSecondary,
+        ),
+      ),
+    );
+  }
+}
