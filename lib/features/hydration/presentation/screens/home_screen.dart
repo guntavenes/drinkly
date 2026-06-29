@@ -2,15 +2,32 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   static const int dailyGoal = 2500;
-  static const int currentAmount = 0;
+
+  int currentAmount = 0;
+
+  void addWater(int amount) {
+    setState(() {
+      currentAmount += amount;
+
+      if (currentAmount > dailyGoal) {
+        currentAmount = dailyGoal;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final progress = currentAmount / dailyGoal;
+    final percent = (progress * 100).round();
 
     return Scaffold(
       body: Container(
@@ -68,17 +85,23 @@ class HomeScreen extends StatelessWidget {
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            SizedBox(
-                              height: 180,
-                              width: 180,
-                              child: CircularProgressIndicator(
-                                value: progress,
-                                strokeWidth: 16,
-                                backgroundColor: AppColors.primary.withValues(
-                                  alpha: 0.10,
-                                ),
-                                strokeCap: StrokeCap.round,
-                              ),
+                            TweenAnimationBuilder<double>(
+                              tween: Tween<double>(begin: 0, end: progress),
+                              duration: const Duration(milliseconds: 450),
+                              curve: Curves.easeOutCubic,
+                              builder: (context, value, child) {
+                                return SizedBox(
+                                  height: 180,
+                                  width: 180,
+                                  child: CircularProgressIndicator(
+                                    value: value,
+                                    strokeWidth: 16,
+                                    backgroundColor: AppColors.primary
+                                        .withValues(alpha: 0.10),
+                                    strokeCap: StrokeCap.round,
+                                  ),
+                                );
+                              },
                             ),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -97,7 +120,7 @@ class HomeScreen extends StatelessWidget {
                                   ),
                                 ),
                                 Text(
-                                  '${(progress * 100).round()}%',
+                                  '$percent%',
                                   style: const TextStyle(
                                     fontSize: 16,
                                     color: AppColors.lightTextSecondary,
@@ -109,9 +132,9 @@ class HomeScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 20),
-                      const Text(
-                        'Günlük hedef: 2500 ml',
-                        style: TextStyle(
+                      Text(
+                        'Günlük hedef: $dailyGoal ml',
+                        style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.lightTextSecondary,
                         ),
@@ -132,12 +155,24 @@ class HomeScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 Row(
-                  children: const [
-                    _QuickAddButton(amount: 250),
-                    SizedBox(width: 12),
-                    _QuickAddButton(amount: 330),
-                    SizedBox(width: 12),
-                    _QuickAddButton(amount: 500),
+                  children: [
+                    _QuickAddButton(
+                      amount: 250,
+                      icon: '🥛',
+                      onTap: () => addWater(250),
+                    ),
+                    const SizedBox(width: 12),
+                    _QuickAddButton(
+                      amount: 330,
+                      icon: '🧃',
+                      onTap: () => addWater(330),
+                    ),
+                    const SizedBox(width: 12),
+                    _QuickAddButton(
+                      amount: 500,
+                      icon: '🍶',
+                      onTap: () => addWater(500),
+                    ),
                   ],
                 ),
               ],
@@ -150,28 +185,47 @@ class HomeScreen extends StatelessWidget {
 }
 
 class _QuickAddButton extends StatelessWidget {
-  const _QuickAddButton({required this.amount});
+  const _QuickAddButton({
+    required this.amount,
+    required this.icon,
+    required this.onTap,
+  });
 
   final int amount;
+  final String icon;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        height: 88,
-        decoration: BoxDecoration(
-          color: Colors.white,
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(24),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.12)),
-        ),
-        child: Center(
-          child: Text(
-            '+$amount\nml',
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-              color: AppColors.primary,
+          child: Container(
+            height: 96,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.12),
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(icon, style: const TextStyle(fontSize: 24)),
+                const SizedBox(height: 8),
+                Text(
+                  '+$amount ml',
+                  style: const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
