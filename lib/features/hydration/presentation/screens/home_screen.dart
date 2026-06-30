@@ -1,3 +1,4 @@
+import 'package:drinkly/features/settings/data/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,8 +15,12 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentAmount = ref.watch(todayHydrationTotalProvider);
-    final dailyGoal = ref.watch(dailyGoalProvider);
+    final settingsAsync = ref.watch(settingsProvider);
 
+    final dailyGoal = settingsAsync.maybeWhen(
+      data: (settings) => settings?.dailyGoal ?? 2500,
+      orElse: () => 2500,
+    );
     return Scaffold(
       body: Container(
         width: double.infinity,
