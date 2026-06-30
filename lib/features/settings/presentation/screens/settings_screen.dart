@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import '../../data/providers/settings_providers.dart';
+import '../../../reminders/presentation/screens/reminders_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -15,8 +15,12 @@ class SettingsScreen extends ConsumerWidget {
 
     final dailyGoal = settingsAsync.maybeWhen(
       data: (settings) => settings?.dailyGoal ?? 2500,
-
       orElse: () => 2500,
+    );
+
+    final remindersEnabled = settingsAsync.maybeWhen(
+      data: (settings) => settings?.remindersEnabled ?? false,
+      orElse: () => false,
     );
 
     return Scaffold(
@@ -40,8 +44,15 @@ class SettingsScreen extends ConsumerWidget {
               const SizedBox(height: 20),
               _SettingsGroup(
                 dailyGoal: dailyGoal,
+                remindersEnabled: remindersEnabled,
                 onDailyGoalTap: () {
                   _showDailyGoalSheet(context, ref, dailyGoal);
+                },
+                onReminderTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RemindersScreen()),
+                  );
                 },
               ),
               const SizedBox(height: 20),
@@ -52,88 +63,92 @@ class SettingsScreen extends ConsumerWidget {
       ),
     );
   }
-}
 
-void _showDailyGoalSheet(BuildContext context, WidgetRef ref, int currentGoal) {
-  final goals = [1500, 2000, 2500, 3000, 3500, 4000];
+  void _showDailyGoalSheet(
+    BuildContext context,
+    WidgetRef ref,
+    int currentGoal,
+  ) {
+    final goals = [1500, 2000, 2500, 3000, 3500, 4000];
 
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent,
-    builder: (_) {
-      return Material(
-        color: Colors.white,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 42,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE2E8F0),
-                  borderRadius: BorderRadius.circular(999),
-                ),
-              ),
-              const SizedBox(height: 22),
-              const Text(
-                'Daily Goal',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.lightText,
-                ),
-              ),
-              const SizedBox(height: 20),
-              for (final goal in goals)
-                InkWell(
-                  onTap: () async {
-                    final repository = ref.read(settingsRepositoryProvider);
-                    await repository.updateDailyGoal(goal);
-
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 16,
-                    ),
-                    child: Row(
-                      children: [
-                        const Icon(
-                          Icons.flag_rounded,
-                          color: AppColors.primary,
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Text(
-                            '$goal ml',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.lightText,
-                            ),
-                          ),
-                        ),
-                        if (goal == currentGoal)
-                          const Icon(
-                            Icons.check_rounded,
-                            color: AppColors.primary,
-                          ),
-                      ],
-                    ),
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return Material(
+          color: Colors.white,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 42,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFE2E8F0),
+                    borderRadius: BorderRadius.circular(999),
                   ),
                 ),
-            ],
+                const SizedBox(height: 22),
+                const Text(
+                  'Daily Goal',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: AppColors.lightText,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                for (final goal in goals)
+                  InkWell(
+                    onTap: () async {
+                      final repository = ref.read(settingsRepositoryProvider);
+                      await repository.updateDailyGoal(goal);
+
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 16,
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(
+                            Icons.flag_rounded,
+                            color: AppColors.primary,
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Text(
+                              '$goal ml',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.lightText,
+                              ),
+                            ),
+                          ),
+                          if (goal == currentGoal)
+                            const Icon(
+                              Icons.check_rounded,
+                              color: AppColors.primary,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
+        );
+      },
+    );
+  }
 }
 
 class _ProfileCard extends StatelessWidget {
@@ -195,10 +210,18 @@ class _ProfileCard extends StatelessWidget {
 }
 
 class _SettingsGroup extends StatelessWidget {
-  const _SettingsGroup({required this.dailyGoal, required this.onDailyGoalTap});
+  const _SettingsGroup({
+    required this.dailyGoal,
+    required this.remindersEnabled,
+    required this.onDailyGoalTap,
+    required this.onReminderTap,
+  });
 
   final int dailyGoal;
+  final bool remindersEnabled;
   final VoidCallback onDailyGoalTap;
+  final VoidCallback onReminderTap;
+
   @override
   Widget build(BuildContext context) {
     return GlassCard(
@@ -219,16 +242,18 @@ class _SettingsGroup extends StatelessWidget {
             value: 'Milliliters',
           ),
           const _Divider(),
-          const _SettingsTile(
+          _SettingsTile(
             icon: Icons.notifications_none_rounded,
             title: 'Reminders',
-            value: 'Off',
+            value: remindersEnabled ? 'On' : 'Off',
+            onTap: onReminderTap,
           ),
           const _Divider(),
-          const _SettingsSwitchTile(
+          _SettingsSwitchTile(
             icon: Icons.dark_mode_outlined,
             title: 'Dark Mode',
             value: false,
+            onChanged: (_) {},
           ),
         ],
       ),
@@ -244,8 +269,8 @@ class _AboutGroup extends StatelessWidget {
     return GlassCard(
       padding: EdgeInsets.zero,
       borderRadius: 24,
-      child: Column(
-        children: const [
+      child: const Column(
+        children: [
           _SettingsTile(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy Policy',
@@ -320,11 +345,13 @@ class _SettingsSwitchTile extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.value,
+    required this.onChanged,
   });
 
   final IconData icon;
   final String title;
   final bool value;
+  final ValueChanged<bool> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -343,7 +370,7 @@ class _SettingsSwitchTile extends StatelessWidget {
               ),
             ),
           ),
-          Switch(value: value, onChanged: (_) {}),
+          Switch(value: value, onChanged: onChanged),
         ],
       ),
     );

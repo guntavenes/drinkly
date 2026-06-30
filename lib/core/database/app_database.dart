@@ -28,6 +28,18 @@ class AppSettings extends Table {
   BoolColumn get darkMode => boolean().withDefault(const Constant(false))();
 
   TextColumn get unit => text().withDefault(const Constant('ml'))();
+
+  IntColumn get reminderStartHour => integer().withDefault(const Constant(8))();
+
+  IntColumn get reminderStartMinute =>
+      integer().withDefault(const Constant(0))();
+
+  IntColumn get reminderEndHour => integer().withDefault(const Constant(22))();
+
+  IntColumn get reminderEndMinute => integer().withDefault(const Constant(0))();
+
+  IntColumn get reminderIntervalMinutes =>
+      integer().withDefault(const Constant(120))();
 }
 
 @DriftDatabase(tables: [HydrationEntries, AppSettings])
@@ -35,7 +47,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration {
@@ -50,6 +62,14 @@ class AppDatabase extends _$AppDatabase {
           await m.createTable(appSettings);
 
           await into(appSettings).insert(AppSettingsCompanion.insert());
+        }
+
+        if (from < 3) {
+          await m.addColumn(appSettings, appSettings.reminderStartHour);
+          await m.addColumn(appSettings, appSettings.reminderStartMinute);
+          await m.addColumn(appSettings, appSettings.reminderEndHour);
+          await m.addColumn(appSettings, appSettings.reminderEndMinute);
+          await m.addColumn(appSettings, appSettings.reminderIntervalMinutes);
         }
       },
     );
@@ -106,6 +126,10 @@ class AppDatabase extends _$AppDatabase {
     return select(appSettings).watchSingleOrNull();
   }
 
+  Future<AppSetting?> readSettings() {
+    return select(appSettings).getSingleOrNull();
+  }
+
   Future<void> createDefaultSettingsIfNeeded() async {
     final existing = await select(appSettings).getSingleOrNull();
 
@@ -118,6 +142,42 @@ class AppDatabase extends _$AppDatabase {
     await update(
       appSettings,
     ).write(AppSettingsCompanion(dailyGoal: Value(dailyGoal)));
+  }
+
+  Future<void> updateRemindersEnabled(bool enabled) async {
+    await update(
+      appSettings,
+    ).write(AppSettingsCompanion(remindersEnabled: Value(enabled)));
+  }
+
+  Future<void> updateReminderStartTime({
+    required int hour,
+    required int minute,
+  }) async {
+    await update(appSettings).write(
+      AppSettingsCompanion(
+        reminderStartHour: Value(hour),
+        reminderStartMinute: Value(minute),
+      ),
+    );
+  }
+
+  Future<void> updateReminderEndTime({
+    required int hour,
+    required int minute,
+  }) async {
+    await update(appSettings).write(
+      AppSettingsCompanion(
+        reminderEndHour: Value(hour),
+        reminderEndMinute: Value(minute),
+      ),
+    );
+  }
+
+  Future<void> updateReminderInterval(int minutes) async {
+    await update(
+      appSettings,
+    ).write(AppSettingsCompanion(reminderIntervalMinutes: Value(minutes)));
   }
 }
 

@@ -370,6 +370,65 @@ class $AppSettingsTable extends AppSettings
     requiredDuringInsert: false,
     defaultValue: const Constant('ml'),
   );
+  static const VerificationMeta _reminderStartHourMeta = const VerificationMeta(
+    'reminderStartHour',
+  );
+  @override
+  late final GeneratedColumn<int> reminderStartHour = GeneratedColumn<int>(
+    'reminder_start_hour',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(8),
+  );
+  static const VerificationMeta _reminderStartMinuteMeta =
+      const VerificationMeta('reminderStartMinute');
+  @override
+  late final GeneratedColumn<int> reminderStartMinute = GeneratedColumn<int>(
+    'reminder_start_minute',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _reminderEndHourMeta = const VerificationMeta(
+    'reminderEndHour',
+  );
+  @override
+  late final GeneratedColumn<int> reminderEndHour = GeneratedColumn<int>(
+    'reminder_end_hour',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(22),
+  );
+  static const VerificationMeta _reminderEndMinuteMeta = const VerificationMeta(
+    'reminderEndMinute',
+  );
+  @override
+  late final GeneratedColumn<int> reminderEndMinute = GeneratedColumn<int>(
+    'reminder_end_minute',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _reminderIntervalMinutesMeta =
+      const VerificationMeta('reminderIntervalMinutes');
+  @override
+  late final GeneratedColumn<int> reminderIntervalMinutes =
+      GeneratedColumn<int>(
+        'reminder_interval_minutes',
+        aliasedName,
+        false,
+        type: DriftSqlType.int,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(120),
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -377,6 +436,11 @@ class $AppSettingsTable extends AppSettings
     remindersEnabled,
     darkMode,
     unit,
+    reminderStartHour,
+    reminderStartMinute,
+    reminderEndHour,
+    reminderEndMinute,
+    reminderIntervalMinutes,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -420,6 +484,51 @@ class $AppSettingsTable extends AppSettings
         unit.isAcceptableOrUnknown(data['unit']!, _unitMeta),
       );
     }
+    if (data.containsKey('reminder_start_hour')) {
+      context.handle(
+        _reminderStartHourMeta,
+        reminderStartHour.isAcceptableOrUnknown(
+          data['reminder_start_hour']!,
+          _reminderStartHourMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_start_minute')) {
+      context.handle(
+        _reminderStartMinuteMeta,
+        reminderStartMinute.isAcceptableOrUnknown(
+          data['reminder_start_minute']!,
+          _reminderStartMinuteMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_end_hour')) {
+      context.handle(
+        _reminderEndHourMeta,
+        reminderEndHour.isAcceptableOrUnknown(
+          data['reminder_end_hour']!,
+          _reminderEndHourMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_end_minute')) {
+      context.handle(
+        _reminderEndMinuteMeta,
+        reminderEndMinute.isAcceptableOrUnknown(
+          data['reminder_end_minute']!,
+          _reminderEndMinuteMeta,
+        ),
+      );
+    }
+    if (data.containsKey('reminder_interval_minutes')) {
+      context.handle(
+        _reminderIntervalMinutesMeta,
+        reminderIntervalMinutes.isAcceptableOrUnknown(
+          data['reminder_interval_minutes']!,
+          _reminderIntervalMinutesMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -449,6 +558,26 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.string,
         data['${effectivePrefix}unit'],
       )!,
+      reminderStartHour: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_start_hour'],
+      )!,
+      reminderStartMinute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_start_minute'],
+      )!,
+      reminderEndHour: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_end_hour'],
+      )!,
+      reminderEndMinute: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_end_minute'],
+      )!,
+      reminderIntervalMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}reminder_interval_minutes'],
+      )!,
     );
   }
 
@@ -464,12 +593,22 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final bool remindersEnabled;
   final bool darkMode;
   final String unit;
+  final int reminderStartHour;
+  final int reminderStartMinute;
+  final int reminderEndHour;
+  final int reminderEndMinute;
+  final int reminderIntervalMinutes;
   const AppSetting({
     required this.id,
     required this.dailyGoal,
     required this.remindersEnabled,
     required this.darkMode,
     required this.unit,
+    required this.reminderStartHour,
+    required this.reminderStartMinute,
+    required this.reminderEndHour,
+    required this.reminderEndMinute,
+    required this.reminderIntervalMinutes,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -479,6 +618,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['reminders_enabled'] = Variable<bool>(remindersEnabled);
     map['dark_mode'] = Variable<bool>(darkMode);
     map['unit'] = Variable<String>(unit);
+    map['reminder_start_hour'] = Variable<int>(reminderStartHour);
+    map['reminder_start_minute'] = Variable<int>(reminderStartMinute);
+    map['reminder_end_hour'] = Variable<int>(reminderEndHour);
+    map['reminder_end_minute'] = Variable<int>(reminderEndMinute);
+    map['reminder_interval_minutes'] = Variable<int>(reminderIntervalMinutes);
     return map;
   }
 
@@ -489,6 +633,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       remindersEnabled: Value(remindersEnabled),
       darkMode: Value(darkMode),
       unit: Value(unit),
+      reminderStartHour: Value(reminderStartHour),
+      reminderStartMinute: Value(reminderStartMinute),
+      reminderEndHour: Value(reminderEndHour),
+      reminderEndMinute: Value(reminderEndMinute),
+      reminderIntervalMinutes: Value(reminderIntervalMinutes),
     );
   }
 
@@ -503,6 +652,15 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       remindersEnabled: serializer.fromJson<bool>(json['remindersEnabled']),
       darkMode: serializer.fromJson<bool>(json['darkMode']),
       unit: serializer.fromJson<String>(json['unit']),
+      reminderStartHour: serializer.fromJson<int>(json['reminderStartHour']),
+      reminderStartMinute: serializer.fromJson<int>(
+        json['reminderStartMinute'],
+      ),
+      reminderEndHour: serializer.fromJson<int>(json['reminderEndHour']),
+      reminderEndMinute: serializer.fromJson<int>(json['reminderEndMinute']),
+      reminderIntervalMinutes: serializer.fromJson<int>(
+        json['reminderIntervalMinutes'],
+      ),
     );
   }
   @override
@@ -514,6 +672,13 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'remindersEnabled': serializer.toJson<bool>(remindersEnabled),
       'darkMode': serializer.toJson<bool>(darkMode),
       'unit': serializer.toJson<String>(unit),
+      'reminderStartHour': serializer.toJson<int>(reminderStartHour),
+      'reminderStartMinute': serializer.toJson<int>(reminderStartMinute),
+      'reminderEndHour': serializer.toJson<int>(reminderEndHour),
+      'reminderEndMinute': serializer.toJson<int>(reminderEndMinute),
+      'reminderIntervalMinutes': serializer.toJson<int>(
+        reminderIntervalMinutes,
+      ),
     };
   }
 
@@ -523,12 +688,23 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     bool? remindersEnabled,
     bool? darkMode,
     String? unit,
+    int? reminderStartHour,
+    int? reminderStartMinute,
+    int? reminderEndHour,
+    int? reminderEndMinute,
+    int? reminderIntervalMinutes,
   }) => AppSetting(
     id: id ?? this.id,
     dailyGoal: dailyGoal ?? this.dailyGoal,
     remindersEnabled: remindersEnabled ?? this.remindersEnabled,
     darkMode: darkMode ?? this.darkMode,
     unit: unit ?? this.unit,
+    reminderStartHour: reminderStartHour ?? this.reminderStartHour,
+    reminderStartMinute: reminderStartMinute ?? this.reminderStartMinute,
+    reminderEndHour: reminderEndHour ?? this.reminderEndHour,
+    reminderEndMinute: reminderEndMinute ?? this.reminderEndMinute,
+    reminderIntervalMinutes:
+        reminderIntervalMinutes ?? this.reminderIntervalMinutes,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -539,6 +715,21 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           : this.remindersEnabled,
       darkMode: data.darkMode.present ? data.darkMode.value : this.darkMode,
       unit: data.unit.present ? data.unit.value : this.unit,
+      reminderStartHour: data.reminderStartHour.present
+          ? data.reminderStartHour.value
+          : this.reminderStartHour,
+      reminderStartMinute: data.reminderStartMinute.present
+          ? data.reminderStartMinute.value
+          : this.reminderStartMinute,
+      reminderEndHour: data.reminderEndHour.present
+          ? data.reminderEndHour.value
+          : this.reminderEndHour,
+      reminderEndMinute: data.reminderEndMinute.present
+          ? data.reminderEndMinute.value
+          : this.reminderEndMinute,
+      reminderIntervalMinutes: data.reminderIntervalMinutes.present
+          ? data.reminderIntervalMinutes.value
+          : this.reminderIntervalMinutes,
     );
   }
 
@@ -549,14 +740,29 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('dailyGoal: $dailyGoal, ')
           ..write('remindersEnabled: $remindersEnabled, ')
           ..write('darkMode: $darkMode, ')
-          ..write('unit: $unit')
+          ..write('unit: $unit, ')
+          ..write('reminderStartHour: $reminderStartHour, ')
+          ..write('reminderStartMinute: $reminderStartMinute, ')
+          ..write('reminderEndHour: $reminderEndHour, ')
+          ..write('reminderEndMinute: $reminderEndMinute, ')
+          ..write('reminderIntervalMinutes: $reminderIntervalMinutes')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, dailyGoal, remindersEnabled, darkMode, unit);
+  int get hashCode => Object.hash(
+    id,
+    dailyGoal,
+    remindersEnabled,
+    darkMode,
+    unit,
+    reminderStartHour,
+    reminderStartMinute,
+    reminderEndHour,
+    reminderEndMinute,
+    reminderIntervalMinutes,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -565,7 +771,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.dailyGoal == this.dailyGoal &&
           other.remindersEnabled == this.remindersEnabled &&
           other.darkMode == this.darkMode &&
-          other.unit == this.unit);
+          other.unit == this.unit &&
+          other.reminderStartHour == this.reminderStartHour &&
+          other.reminderStartMinute == this.reminderStartMinute &&
+          other.reminderEndHour == this.reminderEndHour &&
+          other.reminderEndMinute == this.reminderEndMinute &&
+          other.reminderIntervalMinutes == this.reminderIntervalMinutes);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -574,12 +785,22 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<bool> remindersEnabled;
   final Value<bool> darkMode;
   final Value<String> unit;
+  final Value<int> reminderStartHour;
+  final Value<int> reminderStartMinute;
+  final Value<int> reminderEndHour;
+  final Value<int> reminderEndMinute;
+  final Value<int> reminderIntervalMinutes;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.dailyGoal = const Value.absent(),
     this.remindersEnabled = const Value.absent(),
     this.darkMode = const Value.absent(),
     this.unit = const Value.absent(),
+    this.reminderStartHour = const Value.absent(),
+    this.reminderStartMinute = const Value.absent(),
+    this.reminderEndHour = const Value.absent(),
+    this.reminderEndMinute = const Value.absent(),
+    this.reminderIntervalMinutes = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -587,6 +808,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.remindersEnabled = const Value.absent(),
     this.darkMode = const Value.absent(),
     this.unit = const Value.absent(),
+    this.reminderStartHour = const Value.absent(),
+    this.reminderStartMinute = const Value.absent(),
+    this.reminderEndHour = const Value.absent(),
+    this.reminderEndMinute = const Value.absent(),
+    this.reminderIntervalMinutes = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -594,6 +820,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<bool>? remindersEnabled,
     Expression<bool>? darkMode,
     Expression<String>? unit,
+    Expression<int>? reminderStartHour,
+    Expression<int>? reminderStartMinute,
+    Expression<int>? reminderEndHour,
+    Expression<int>? reminderEndMinute,
+    Expression<int>? reminderIntervalMinutes,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -601,6 +832,13 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (remindersEnabled != null) 'reminders_enabled': remindersEnabled,
       if (darkMode != null) 'dark_mode': darkMode,
       if (unit != null) 'unit': unit,
+      if (reminderStartHour != null) 'reminder_start_hour': reminderStartHour,
+      if (reminderStartMinute != null)
+        'reminder_start_minute': reminderStartMinute,
+      if (reminderEndHour != null) 'reminder_end_hour': reminderEndHour,
+      if (reminderEndMinute != null) 'reminder_end_minute': reminderEndMinute,
+      if (reminderIntervalMinutes != null)
+        'reminder_interval_minutes': reminderIntervalMinutes,
     });
   }
 
@@ -610,6 +848,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<bool>? remindersEnabled,
     Value<bool>? darkMode,
     Value<String>? unit,
+    Value<int>? reminderStartHour,
+    Value<int>? reminderStartMinute,
+    Value<int>? reminderEndHour,
+    Value<int>? reminderEndMinute,
+    Value<int>? reminderIntervalMinutes,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -617,6 +860,12 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       remindersEnabled: remindersEnabled ?? this.remindersEnabled,
       darkMode: darkMode ?? this.darkMode,
       unit: unit ?? this.unit,
+      reminderStartHour: reminderStartHour ?? this.reminderStartHour,
+      reminderStartMinute: reminderStartMinute ?? this.reminderStartMinute,
+      reminderEndHour: reminderEndHour ?? this.reminderEndHour,
+      reminderEndMinute: reminderEndMinute ?? this.reminderEndMinute,
+      reminderIntervalMinutes:
+          reminderIntervalMinutes ?? this.reminderIntervalMinutes,
     );
   }
 
@@ -638,6 +887,23 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (unit.present) {
       map['unit'] = Variable<String>(unit.value);
     }
+    if (reminderStartHour.present) {
+      map['reminder_start_hour'] = Variable<int>(reminderStartHour.value);
+    }
+    if (reminderStartMinute.present) {
+      map['reminder_start_minute'] = Variable<int>(reminderStartMinute.value);
+    }
+    if (reminderEndHour.present) {
+      map['reminder_end_hour'] = Variable<int>(reminderEndHour.value);
+    }
+    if (reminderEndMinute.present) {
+      map['reminder_end_minute'] = Variable<int>(reminderEndMinute.value);
+    }
+    if (reminderIntervalMinutes.present) {
+      map['reminder_interval_minutes'] = Variable<int>(
+        reminderIntervalMinutes.value,
+      );
+    }
     return map;
   }
 
@@ -648,7 +914,12 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('dailyGoal: $dailyGoal, ')
           ..write('remindersEnabled: $remindersEnabled, ')
           ..write('darkMode: $darkMode, ')
-          ..write('unit: $unit')
+          ..write('unit: $unit, ')
+          ..write('reminderStartHour: $reminderStartHour, ')
+          ..write('reminderStartMinute: $reminderStartMinute, ')
+          ..write('reminderEndHour: $reminderEndHour, ')
+          ..write('reminderEndMinute: $reminderEndMinute, ')
+          ..write('reminderIntervalMinutes: $reminderIntervalMinutes')
           ..write(')'))
         .toString();
   }
@@ -859,6 +1130,11 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<bool> remindersEnabled,
       Value<bool> darkMode,
       Value<String> unit,
+      Value<int> reminderStartHour,
+      Value<int> reminderStartMinute,
+      Value<int> reminderEndHour,
+      Value<int> reminderEndMinute,
+      Value<int> reminderIntervalMinutes,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -867,6 +1143,11 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<bool> remindersEnabled,
       Value<bool> darkMode,
       Value<String> unit,
+      Value<int> reminderStartHour,
+      Value<int> reminderStartMinute,
+      Value<int> reminderEndHour,
+      Value<int> reminderEndMinute,
+      Value<int> reminderIntervalMinutes,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -900,6 +1181,31 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<String> get unit => $composableBuilder(
     column: $table.unit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderStartHour => $composableBuilder(
+    column: $table.reminderStartHour,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderStartMinute => $composableBuilder(
+    column: $table.reminderStartMinute,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderEndHour => $composableBuilder(
+    column: $table.reminderEndHour,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderEndMinute => $composableBuilder(
+    column: $table.reminderEndMinute,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get reminderIntervalMinutes => $composableBuilder(
+    column: $table.reminderIntervalMinutes,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -937,6 +1243,31 @@ class $$AppSettingsTableOrderingComposer
     column: $table.unit,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get reminderStartHour => $composableBuilder(
+    column: $table.reminderStartHour,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reminderStartMinute => $composableBuilder(
+    column: $table.reminderStartMinute,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reminderEndHour => $composableBuilder(
+    column: $table.reminderEndHour,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reminderEndMinute => $composableBuilder(
+    column: $table.reminderEndMinute,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get reminderIntervalMinutes => $composableBuilder(
+    column: $table.reminderIntervalMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -964,6 +1295,31 @@ class $$AppSettingsTableAnnotationComposer
 
   GeneratedColumn<String> get unit =>
       $composableBuilder(column: $table.unit, builder: (column) => column);
+
+  GeneratedColumn<int> get reminderStartHour => $composableBuilder(
+    column: $table.reminderStartHour,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reminderStartMinute => $composableBuilder(
+    column: $table.reminderStartMinute,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reminderEndHour => $composableBuilder(
+    column: $table.reminderEndHour,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reminderEndMinute => $composableBuilder(
+    column: $table.reminderEndMinute,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get reminderIntervalMinutes => $composableBuilder(
+    column: $table.reminderIntervalMinutes,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -1002,12 +1358,22 @@ class $$AppSettingsTableTableManager
                 Value<bool> remindersEnabled = const Value.absent(),
                 Value<bool> darkMode = const Value.absent(),
                 Value<String> unit = const Value.absent(),
+                Value<int> reminderStartHour = const Value.absent(),
+                Value<int> reminderStartMinute = const Value.absent(),
+                Value<int> reminderEndHour = const Value.absent(),
+                Value<int> reminderEndMinute = const Value.absent(),
+                Value<int> reminderIntervalMinutes = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 dailyGoal: dailyGoal,
                 remindersEnabled: remindersEnabled,
                 darkMode: darkMode,
                 unit: unit,
+                reminderStartHour: reminderStartHour,
+                reminderStartMinute: reminderStartMinute,
+                reminderEndHour: reminderEndHour,
+                reminderEndMinute: reminderEndMinute,
+                reminderIntervalMinutes: reminderIntervalMinutes,
               ),
           createCompanionCallback:
               ({
@@ -1016,12 +1382,22 @@ class $$AppSettingsTableTableManager
                 Value<bool> remindersEnabled = const Value.absent(),
                 Value<bool> darkMode = const Value.absent(),
                 Value<String> unit = const Value.absent(),
+                Value<int> reminderStartHour = const Value.absent(),
+                Value<int> reminderStartMinute = const Value.absent(),
+                Value<int> reminderEndHour = const Value.absent(),
+                Value<int> reminderEndMinute = const Value.absent(),
+                Value<int> reminderIntervalMinutes = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 dailyGoal: dailyGoal,
                 remindersEnabled: remindersEnabled,
                 darkMode: darkMode,
                 unit: unit,
+                reminderStartHour: reminderStartHour,
+                reminderStartMinute: reminderStartMinute,
+                reminderEndHour: reminderEndHour,
+                reminderEndMinute: reminderEndMinute,
+                reminderIntervalMinutes: reminderIntervalMinutes,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
