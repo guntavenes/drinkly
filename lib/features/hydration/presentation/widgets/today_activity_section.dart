@@ -1,12 +1,11 @@
 import 'package:drinkly/shared/widgets/app_list_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
-import '../../../../core/database/app_database.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/section_header.dart';
 import '../../data/providers/hydration_providers.dart';
+import '../../domain/models/hydration_entry_model.dart';
 
 class TodayActivitySection extends ConsumerWidget {
   const TodayActivitySection({super.key});
@@ -54,7 +53,7 @@ class TodayActivitySection extends ConsumerWidget {
 class _ActivityEntryTile extends StatelessWidget {
   const _ActivityEntryTile({required this.entry});
 
-  final HydrationEntry entry;
+  final HydrationEntryModel entry;
 
   @override
   Widget build(BuildContext context) {
@@ -64,23 +63,10 @@ class _ActivityEntryTile extends StatelessWidget {
         color: AppColors.primary,
         size: 28,
       ),
-      title: '${entry.amount} ml',
-      subtitle: _drinkTypeLabel(entry.drinkType),
-      trailing: DateFormat('HH:mm').format(entry.createdAt),
+      title: entry.amountText,
+      subtitle: 'Water',
+      trailing: entry.timeText,
     );
-  }
-
-  String _drinkTypeLabel(String value) {
-    switch (value) {
-      case 'water':
-        return 'Water';
-      case 'coffee':
-        return 'Coffee';
-      case 'tea':
-        return 'Tea';
-      default:
-        return value;
-    }
   }
 }
 
@@ -98,7 +84,7 @@ class _EmptyActivity extends StatelessWidget {
         border: Border.all(color: AppColors.primary.withValues(alpha: .08)),
       ),
       child: const Text(
-        'No drinks added yet. Start with a quick add.',
+        'No water added yet. Start with a quick add.',
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,

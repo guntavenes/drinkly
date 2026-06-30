@@ -1,6 +1,7 @@
 import 'package:drinkly/features/statistics/presentation/screens/statistic_screen.dart';
 import 'package:flutter/material.dart';
 
+import '../features/history/presentation/screens/history_screen.dart';
 import '../features/hydration/presentation/screens/home_screen.dart';
 import '../features/settings/presentation/screens/settings_screen.dart';
 
@@ -14,7 +15,12 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int _selectedIndex = 0;
 
-  final _screens = const [HomeScreen(), StatisticsScreen(), SettingsScreen()];
+  final _screens = const [
+    HomeScreen(),
+    StatisticsScreen(),
+    HistoryScreen(),
+    SettingsScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -30,6 +36,10 @@ class _AppShellState extends State<AppShell> {
           NavigationDestination(
             icon: Icon(Icons.bar_chart_rounded),
             label: 'Stats',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.history_rounded),
+            label: 'History',
           ),
           NavigationDestination(
             icon: Icon(Icons.settings_rounded),

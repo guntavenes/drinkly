@@ -58,6 +58,18 @@ class AppDatabase extends _$AppDatabase {
           ]))
         .watch();
   }
+
+  Stream<List<HydrationEntry>> watchAllEntries() {
+    return (select(hydrationEntries)..orderBy([
+          (tbl) =>
+              OrderingTerm(expression: tbl.createdAt, mode: OrderingMode.desc),
+        ]))
+        .watch();
+  }
+
+  Future<void> deleteHydrationEntryById(int id) {
+    return (delete(hydrationEntries)..where((tbl) => tbl.id.equals(id))).go();
+  }
 }
 
 LazyDatabase _openConnection() {
