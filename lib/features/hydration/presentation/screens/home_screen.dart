@@ -21,6 +21,7 @@ class HomeScreen extends ConsumerWidget {
       data: (settings) => settings?.dailyGoal ?? 2500,
       orElse: () => 2500,
     );
+
     return Scaffold(
       body: Container(
         width: double.infinity,
@@ -53,6 +54,7 @@ class HomeScreen extends ConsumerWidget {
                     await repository.addWater(amount: amount);
                   },
                 ),
+                const SizedBox(height: 28),
                 const SizedBox(height: 28),
                 const TodayActivitySection(),
               ],

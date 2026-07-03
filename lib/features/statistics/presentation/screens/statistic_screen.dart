@@ -1,3 +1,4 @@
+import 'package:drinkly/features/statistics/presentation/widgets/hydration_summary_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +17,7 @@ class StatisticsScreen extends ConsumerWidget {
     final weeklyTotal = ref.watch(weeklyHydrationTotalProvider);
     final weeklyAverage = ref.watch(weeklyHydrationAverageProvider);
     final bestDay = ref.watch(weeklyHydrationBestDayProvider);
+    final currentStreak = ref.watch(currentStreakProvider);
 
     return Scaffold(
       backgroundColor: AppColors.lightBackground,
@@ -36,16 +38,19 @@ class StatisticsScreen extends ConsumerWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 24),
               const PeriodSelector(),
-              const SizedBox(height: 28),
-              WeeklyChartCard(values: weeklyTotals),
+              const SizedBox(height: 24),
+              HydrationSummaryCard(weeklyTotal: weeklyTotal),
               const SizedBox(height: 24),
               OverviewGrid(
                 weeklyTotal: weeklyTotal,
                 dailyAverage: weeklyAverage,
                 bestDay: bestDay,
+                currentStreak: currentStreak,
               ),
+              const SizedBox(height: 24),
+              WeeklyChartCard(values: weeklyTotals),
             ],
           ),
         ),

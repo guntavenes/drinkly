@@ -1,3 +1,4 @@
+import 'package:drinkly/features/settings/data/providers/settings_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
 
@@ -90,4 +91,57 @@ final weeklyHydrationBestDayProvider = Provider<int>((ref) {
   }
 
   return totals.reduce((a, b) => a > b ? a : b);
+});
+
+final currentStreakProvider = Provider<int>((ref) {
+  final entriesAsync = ref.watch(allHydrationEntriesProvider);
+  final settingsAsync = ref.watch(settingsProvider);
+
+  final dailyGoal = settingsAsync.maybeWhen(
+    data: (settings) => settings?.dailyGoal ?? 2500,
+    orElse: () => 2500,
+  );
+
+  return entriesAsync.maybeWhen(
+    data: (entries) {
+      if (entries.isEmpty) return 0;
+
+      final totalsByDay = <DateTime, int>{};
+
+      for (final entry in entries) {
+        final day = DateTime(
+          entry.createdAt.year,
+          entry.createdAt.month,
+          entry.createdAt.day,
+        );
+
+        totalsByDay[day] = (totalsByDay[day] ?? 0) + entry.amount;
+      }
+
+      var streak = 0;
+      var cursor = DateTime.now();
+
+      cursor = DateTime(cursor.year, cursor.month, cursor.day);
+
+      final todayTotal = totalsByDay[cursor] ?? 0;
+
+      if (todayTotal < dailyGoal) {
+        cursor = cursor.subtract(const Duration(days: 1));
+      }
+
+      while (true) {
+        final total = totalsByDay[cursor] ?? 0;
+
+        if (total < dailyGoal) {
+          break;
+        }
+
+        streak++;
+        cursor = cursor.subtract(const Duration(days: 1));
+      }
+
+      return streak;
+    },
+    orElse: () => 0,
+  );
 });

@@ -1,3 +1,4 @@
+import 'package:drinkly/features/achievements/presentation/screens/achievements_screen.dart';
 import 'package:drinkly/features/statistics/presentation/screens/statistic_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class _AppShellState extends State<AppShell> {
   final _screens = const [
     HomeScreen(),
     StatisticsScreen(),
+    AchievementsScreen(),
     HistoryScreen(),
     SettingsScreen(),
   ];
@@ -36,6 +38,10 @@ class _AppShellState extends State<AppShell> {
           NavigationDestination(
             icon: Icon(Icons.bar_chart_rounded),
             label: 'Stats',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.emoji_events_rounded),
+            label: 'Awards',
           ),
           NavigationDestination(
             icon: Icon(Icons.history_rounded),

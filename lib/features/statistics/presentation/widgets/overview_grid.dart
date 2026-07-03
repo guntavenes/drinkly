@@ -9,11 +9,13 @@ class OverviewGrid extends StatelessWidget {
     required this.weeklyTotal,
     required this.dailyAverage,
     required this.bestDay,
+    required this.currentStreak,
   });
 
   final int weeklyTotal;
   final double dailyAverage;
   final int bestDay;
+  final int currentStreak;
 
   @override
   Widget build(BuildContext context) {
@@ -54,9 +56,9 @@ class OverviewGrid extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             OverviewCard(
-              icon: Icons.track_changes_rounded,
-              title: _goalPercentText(bestDay),
-              subtitle: 'Best Goal',
+              icon: Icons.local_fire_department_rounded,
+              title: '$currentStreak days',
+              subtitle: 'Current Streak',
             ),
           ],
         ),
