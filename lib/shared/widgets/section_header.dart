@@ -16,14 +16,16 @@ class SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
     return Row(
       children: [
         Text(
           title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w900,
-            color: AppColors.lightText,
+            color: textColor,
             letterSpacing: -0.2,
           ),
         ),
@@ -33,7 +35,7 @@ class SectionHeader extends StatelessWidget {
             onTap: onActionTap,
             child: Text(
               actionText!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
                 color: AppColors.primary,

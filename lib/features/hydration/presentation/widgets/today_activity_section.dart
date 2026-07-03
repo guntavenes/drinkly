@@ -75,20 +75,28 @@ class _EmptyActivity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(22),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: .92),
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.primary.withValues(alpha: .08)),
+        border: Border.all(
+          color: isDark
+              ? const Color(0xFF334155)
+              : AppColors.primary.withValues(alpha: .08),
+        ),
       ),
-      child: const Text(
+      child: Text(
         'No water added yet. Start with a quick add.',
         style: TextStyle(
           fontSize: 14,
           fontWeight: FontWeight.w600,
-          color: AppColors.lightTextSecondary,
+          color: secondaryTextColor,
         ),
       ),
     );

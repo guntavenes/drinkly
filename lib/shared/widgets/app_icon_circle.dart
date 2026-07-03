@@ -10,9 +10,10 @@ class AppIconCircle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Material(
-      color: Colors.white,
-      elevation: 0,
+      color: Colors.transparent,
       shape: const CircleBorder(),
       child: InkWell(
         onTap: onTap,
@@ -22,10 +23,17 @@ class AppIconCircle extends StatelessWidget {
           height: 64,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.primary.withValues(alpha: .12)),
+            color: Theme.of(context).cardColor,
+            border: Border.all(
+              color: isDark
+                  ? const Color(0xFF334155)
+                  : AppColors.primary.withValues(alpha: .12),
+            ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withValues(alpha: .08),
+                color: isDark
+                    ? Colors.black.withValues(alpha: .28)
+                    : AppColors.primary.withValues(alpha: .08),
                 blurRadius: 18,
                 offset: const Offset(0, 10),
               ),

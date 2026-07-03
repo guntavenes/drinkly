@@ -13,6 +13,8 @@ dependencies:
 
   cupertino_icons: ^1.0.8
 
+  confetti: ^0.8.0
+
   # State Management
   flutter_riverpod: ^3.0.3
 

@@ -10,6 +10,8 @@ class HydrationSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
     final liters = (weeklyTotal / 1000).toStringAsFixed(1);
 
     return GlassCard(
@@ -18,12 +20,12 @@ class HydrationSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'This Week',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w700,
-              color: AppColors.lightTextSecondary,
+              color: secondaryTextColor,
             ),
           ),
           const SizedBox(height: 10),

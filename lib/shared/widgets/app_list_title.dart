@@ -19,6 +19,9 @@ class AppListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
     return GlassCard(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
       borderRadius: 22,
@@ -32,29 +35,26 @@ class AppListTile extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.lightText,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.lightTextSecondary,
-                  ),
+                  style: TextStyle(fontSize: 13, color: secondaryTextColor),
                 ),
               ],
             ),
           ),
           Text(
             trailing,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
-              color: AppColors.lightTextSecondary,
+              color: secondaryTextColor,
             ),
           ),
         ],

@@ -429,6 +429,51 @@ class $AppSettingsTable extends AppSettings
         requiredDuringInsert: false,
         defaultValue: const Constant(120),
       );
+  static const VerificationMeta _userNameMeta = const VerificationMeta(
+    'userName',
+  );
+  @override
+  late final GeneratedColumn<String> userName = GeneratedColumn<String>(
+    'user_name',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _weightKgMeta = const VerificationMeta(
+    'weightKg',
+  );
+  @override
+  late final GeneratedColumn<int> weightKg = GeneratedColumn<int>(
+    'weight_kg',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _activityLevelMeta = const VerificationMeta(
+    'activityLevel',
+  );
+  @override
+  late final GeneratedColumn<int> activityLevel = GeneratedColumn<int>(
+    'activity_level',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _lastCelebratedDateMeta =
+      const VerificationMeta('lastCelebratedDate');
+  @override
+  late final GeneratedColumn<DateTime> lastCelebratedDate =
+      GeneratedColumn<DateTime>(
+        'last_celebrated_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -441,6 +486,10 @@ class $AppSettingsTable extends AppSettings
     reminderEndHour,
     reminderEndMinute,
     reminderIntervalMinutes,
+    userName,
+    weightKg,
+    activityLevel,
+    lastCelebratedDate,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -529,6 +578,36 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('user_name')) {
+      context.handle(
+        _userNameMeta,
+        userName.isAcceptableOrUnknown(data['user_name']!, _userNameMeta),
+      );
+    }
+    if (data.containsKey('weight_kg')) {
+      context.handle(
+        _weightKgMeta,
+        weightKg.isAcceptableOrUnknown(data['weight_kg']!, _weightKgMeta),
+      );
+    }
+    if (data.containsKey('activity_level')) {
+      context.handle(
+        _activityLevelMeta,
+        activityLevel.isAcceptableOrUnknown(
+          data['activity_level']!,
+          _activityLevelMeta,
+        ),
+      );
+    }
+    if (data.containsKey('last_celebrated_date')) {
+      context.handle(
+        _lastCelebratedDateMeta,
+        lastCelebratedDate.isAcceptableOrUnknown(
+          data['last_celebrated_date']!,
+          _lastCelebratedDateMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -578,6 +657,22 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.int,
         data['${effectivePrefix}reminder_interval_minutes'],
       )!,
+      userName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}user_name'],
+      ),
+      weightKg: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}weight_kg'],
+      ),
+      activityLevel: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}activity_level'],
+      )!,
+      lastCelebratedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_celebrated_date'],
+      ),
     );
   }
 
@@ -598,6 +693,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final int reminderEndHour;
   final int reminderEndMinute;
   final int reminderIntervalMinutes;
+  final String? userName;
+  final int? weightKg;
+  final int activityLevel;
+  final DateTime? lastCelebratedDate;
   const AppSetting({
     required this.id,
     required this.dailyGoal,
@@ -609,6 +708,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.reminderEndHour,
     required this.reminderEndMinute,
     required this.reminderIntervalMinutes,
+    this.userName,
+    this.weightKg,
+    required this.activityLevel,
+    this.lastCelebratedDate,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -623,6 +726,16 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     map['reminder_end_hour'] = Variable<int>(reminderEndHour);
     map['reminder_end_minute'] = Variable<int>(reminderEndMinute);
     map['reminder_interval_minutes'] = Variable<int>(reminderIntervalMinutes);
+    if (!nullToAbsent || userName != null) {
+      map['user_name'] = Variable<String>(userName);
+    }
+    if (!nullToAbsent || weightKg != null) {
+      map['weight_kg'] = Variable<int>(weightKg);
+    }
+    map['activity_level'] = Variable<int>(activityLevel);
+    if (!nullToAbsent || lastCelebratedDate != null) {
+      map['last_celebrated_date'] = Variable<DateTime>(lastCelebratedDate);
+    }
     return map;
   }
 
@@ -638,6 +751,16 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       reminderEndHour: Value(reminderEndHour),
       reminderEndMinute: Value(reminderEndMinute),
       reminderIntervalMinutes: Value(reminderIntervalMinutes),
+      userName: userName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(userName),
+      weightKg: weightKg == null && nullToAbsent
+          ? const Value.absent()
+          : Value(weightKg),
+      activityLevel: Value(activityLevel),
+      lastCelebratedDate: lastCelebratedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastCelebratedDate),
     );
   }
 
@@ -661,6 +784,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       reminderIntervalMinutes: serializer.fromJson<int>(
         json['reminderIntervalMinutes'],
       ),
+      userName: serializer.fromJson<String?>(json['userName']),
+      weightKg: serializer.fromJson<int?>(json['weightKg']),
+      activityLevel: serializer.fromJson<int>(json['activityLevel']),
+      lastCelebratedDate: serializer.fromJson<DateTime?>(
+        json['lastCelebratedDate'],
+      ),
     );
   }
   @override
@@ -679,6 +808,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'reminderIntervalMinutes': serializer.toJson<int>(
         reminderIntervalMinutes,
       ),
+      'userName': serializer.toJson<String?>(userName),
+      'weightKg': serializer.toJson<int?>(weightKg),
+      'activityLevel': serializer.toJson<int>(activityLevel),
+      'lastCelebratedDate': serializer.toJson<DateTime?>(lastCelebratedDate),
     };
   }
 
@@ -693,6 +826,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     int? reminderEndHour,
     int? reminderEndMinute,
     int? reminderIntervalMinutes,
+    Value<String?> userName = const Value.absent(),
+    Value<int?> weightKg = const Value.absent(),
+    int? activityLevel,
+    Value<DateTime?> lastCelebratedDate = const Value.absent(),
   }) => AppSetting(
     id: id ?? this.id,
     dailyGoal: dailyGoal ?? this.dailyGoal,
@@ -705,6 +842,12 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     reminderEndMinute: reminderEndMinute ?? this.reminderEndMinute,
     reminderIntervalMinutes:
         reminderIntervalMinutes ?? this.reminderIntervalMinutes,
+    userName: userName.present ? userName.value : this.userName,
+    weightKg: weightKg.present ? weightKg.value : this.weightKg,
+    activityLevel: activityLevel ?? this.activityLevel,
+    lastCelebratedDate: lastCelebratedDate.present
+        ? lastCelebratedDate.value
+        : this.lastCelebratedDate,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -730,6 +873,14 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       reminderIntervalMinutes: data.reminderIntervalMinutes.present
           ? data.reminderIntervalMinutes.value
           : this.reminderIntervalMinutes,
+      userName: data.userName.present ? data.userName.value : this.userName,
+      weightKg: data.weightKg.present ? data.weightKg.value : this.weightKg,
+      activityLevel: data.activityLevel.present
+          ? data.activityLevel.value
+          : this.activityLevel,
+      lastCelebratedDate: data.lastCelebratedDate.present
+          ? data.lastCelebratedDate.value
+          : this.lastCelebratedDate,
     );
   }
 
@@ -745,7 +896,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('reminderStartMinute: $reminderStartMinute, ')
           ..write('reminderEndHour: $reminderEndHour, ')
           ..write('reminderEndMinute: $reminderEndMinute, ')
-          ..write('reminderIntervalMinutes: $reminderIntervalMinutes')
+          ..write('reminderIntervalMinutes: $reminderIntervalMinutes, ')
+          ..write('userName: $userName, ')
+          ..write('weightKg: $weightKg, ')
+          ..write('activityLevel: $activityLevel, ')
+          ..write('lastCelebratedDate: $lastCelebratedDate')
           ..write(')'))
         .toString();
   }
@@ -762,6 +917,10 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     reminderEndHour,
     reminderEndMinute,
     reminderIntervalMinutes,
+    userName,
+    weightKg,
+    activityLevel,
+    lastCelebratedDate,
   );
   @override
   bool operator ==(Object other) =>
@@ -776,7 +935,11 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.reminderStartMinute == this.reminderStartMinute &&
           other.reminderEndHour == this.reminderEndHour &&
           other.reminderEndMinute == this.reminderEndMinute &&
-          other.reminderIntervalMinutes == this.reminderIntervalMinutes);
+          other.reminderIntervalMinutes == this.reminderIntervalMinutes &&
+          other.userName == this.userName &&
+          other.weightKg == this.weightKg &&
+          other.activityLevel == this.activityLevel &&
+          other.lastCelebratedDate == this.lastCelebratedDate);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -790,6 +953,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<int> reminderEndHour;
   final Value<int> reminderEndMinute;
   final Value<int> reminderIntervalMinutes;
+  final Value<String?> userName;
+  final Value<int?> weightKg;
+  final Value<int> activityLevel;
+  final Value<DateTime?> lastCelebratedDate;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.dailyGoal = const Value.absent(),
@@ -801,6 +968,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.reminderEndHour = const Value.absent(),
     this.reminderEndMinute = const Value.absent(),
     this.reminderIntervalMinutes = const Value.absent(),
+    this.userName = const Value.absent(),
+    this.weightKg = const Value.absent(),
+    this.activityLevel = const Value.absent(),
+    this.lastCelebratedDate = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -813,6 +984,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.reminderEndHour = const Value.absent(),
     this.reminderEndMinute = const Value.absent(),
     this.reminderIntervalMinutes = const Value.absent(),
+    this.userName = const Value.absent(),
+    this.weightKg = const Value.absent(),
+    this.activityLevel = const Value.absent(),
+    this.lastCelebratedDate = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -825,6 +1000,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<int>? reminderEndHour,
     Expression<int>? reminderEndMinute,
     Expression<int>? reminderIntervalMinutes,
+    Expression<String>? userName,
+    Expression<int>? weightKg,
+    Expression<int>? activityLevel,
+    Expression<DateTime>? lastCelebratedDate,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -839,6 +1018,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (reminderEndMinute != null) 'reminder_end_minute': reminderEndMinute,
       if (reminderIntervalMinutes != null)
         'reminder_interval_minutes': reminderIntervalMinutes,
+      if (userName != null) 'user_name': userName,
+      if (weightKg != null) 'weight_kg': weightKg,
+      if (activityLevel != null) 'activity_level': activityLevel,
+      if (lastCelebratedDate != null)
+        'last_celebrated_date': lastCelebratedDate,
     });
   }
 
@@ -853,6 +1037,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<int>? reminderEndHour,
     Value<int>? reminderEndMinute,
     Value<int>? reminderIntervalMinutes,
+    Value<String?>? userName,
+    Value<int?>? weightKg,
+    Value<int>? activityLevel,
+    Value<DateTime?>? lastCelebratedDate,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -866,6 +1054,10 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       reminderEndMinute: reminderEndMinute ?? this.reminderEndMinute,
       reminderIntervalMinutes:
           reminderIntervalMinutes ?? this.reminderIntervalMinutes,
+      userName: userName ?? this.userName,
+      weightKg: weightKg ?? this.weightKg,
+      activityLevel: activityLevel ?? this.activityLevel,
+      lastCelebratedDate: lastCelebratedDate ?? this.lastCelebratedDate,
     );
   }
 
@@ -904,6 +1096,20 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
         reminderIntervalMinutes.value,
       );
     }
+    if (userName.present) {
+      map['user_name'] = Variable<String>(userName.value);
+    }
+    if (weightKg.present) {
+      map['weight_kg'] = Variable<int>(weightKg.value);
+    }
+    if (activityLevel.present) {
+      map['activity_level'] = Variable<int>(activityLevel.value);
+    }
+    if (lastCelebratedDate.present) {
+      map['last_celebrated_date'] = Variable<DateTime>(
+        lastCelebratedDate.value,
+      );
+    }
     return map;
   }
 
@@ -919,7 +1125,11 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('reminderStartMinute: $reminderStartMinute, ')
           ..write('reminderEndHour: $reminderEndHour, ')
           ..write('reminderEndMinute: $reminderEndMinute, ')
-          ..write('reminderIntervalMinutes: $reminderIntervalMinutes')
+          ..write('reminderIntervalMinutes: $reminderIntervalMinutes, ')
+          ..write('userName: $userName, ')
+          ..write('weightKg: $weightKg, ')
+          ..write('activityLevel: $activityLevel, ')
+          ..write('lastCelebratedDate: $lastCelebratedDate')
           ..write(')'))
         .toString();
   }
@@ -1135,6 +1345,10 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<int> reminderEndHour,
       Value<int> reminderEndMinute,
       Value<int> reminderIntervalMinutes,
+      Value<String?> userName,
+      Value<int?> weightKg,
+      Value<int> activityLevel,
+      Value<DateTime?> lastCelebratedDate,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -1148,6 +1362,10 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<int> reminderEndHour,
       Value<int> reminderEndMinute,
       Value<int> reminderIntervalMinutes,
+      Value<String?> userName,
+      Value<int?> weightKg,
+      Value<int> activityLevel,
+      Value<DateTime?> lastCelebratedDate,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -1206,6 +1424,26 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<int> get reminderIntervalMinutes => $composableBuilder(
     column: $table.reminderIntervalMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get userName => $composableBuilder(
+    column: $table.userName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get weightKg => $composableBuilder(
+    column: $table.weightKg,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get activityLevel => $composableBuilder(
+    column: $table.activityLevel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastCelebratedDate => $composableBuilder(
+    column: $table.lastCelebratedDate,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1268,6 +1506,26 @@ class $$AppSettingsTableOrderingComposer
     column: $table.reminderIntervalMinutes,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get userName => $composableBuilder(
+    column: $table.userName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get weightKg => $composableBuilder(
+    column: $table.weightKg,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get activityLevel => $composableBuilder(
+    column: $table.activityLevel,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastCelebratedDate => $composableBuilder(
+    column: $table.lastCelebratedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -1320,6 +1578,22 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.reminderIntervalMinutes,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get userName =>
+      $composableBuilder(column: $table.userName, builder: (column) => column);
+
+  GeneratedColumn<int> get weightKg =>
+      $composableBuilder(column: $table.weightKg, builder: (column) => column);
+
+  GeneratedColumn<int> get activityLevel => $composableBuilder(
+    column: $table.activityLevel,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get lastCelebratedDate => $composableBuilder(
+    column: $table.lastCelebratedDate,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -1363,6 +1637,10 @@ class $$AppSettingsTableTableManager
                 Value<int> reminderEndHour = const Value.absent(),
                 Value<int> reminderEndMinute = const Value.absent(),
                 Value<int> reminderIntervalMinutes = const Value.absent(),
+                Value<String?> userName = const Value.absent(),
+                Value<int?> weightKg = const Value.absent(),
+                Value<int> activityLevel = const Value.absent(),
+                Value<DateTime?> lastCelebratedDate = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 dailyGoal: dailyGoal,
@@ -1374,6 +1652,10 @@ class $$AppSettingsTableTableManager
                 reminderEndHour: reminderEndHour,
                 reminderEndMinute: reminderEndMinute,
                 reminderIntervalMinutes: reminderIntervalMinutes,
+                userName: userName,
+                weightKg: weightKg,
+                activityLevel: activityLevel,
+                lastCelebratedDate: lastCelebratedDate,
               ),
           createCompanionCallback:
               ({
@@ -1387,6 +1669,10 @@ class $$AppSettingsTableTableManager
                 Value<int> reminderEndHour = const Value.absent(),
                 Value<int> reminderEndMinute = const Value.absent(),
                 Value<int> reminderIntervalMinutes = const Value.absent(),
+                Value<String?> userName = const Value.absent(),
+                Value<int?> weightKg = const Value.absent(),
+                Value<int> activityLevel = const Value.absent(),
+                Value<DateTime?> lastCelebratedDate = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 dailyGoal: dailyGoal,
@@ -1398,6 +1684,10 @@ class $$AppSettingsTableTableManager
                 reminderEndHour: reminderEndHour,
                 reminderEndMinute: reminderEndMinute,
                 reminderIntervalMinutes: reminderIntervalMinutes,
+                userName: userName,
+                weightKg: weightKg,
+                activityLevel: activityLevel,
+                lastCelebratedDate: lastCelebratedDate,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

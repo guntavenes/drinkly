@@ -13,9 +13,11 @@ class AchievementsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final achievements = ref.watch(achievementsProvider);
     final unlockedCount = ref.watch(unlockedAchievementsCountProvider);
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -23,13 +25,13 @@ class AchievementsScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 12),
-              const Center(
+              Center(
                 child: Text(
                   'Achievements',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.lightText,
+                    color: textColor,
                   ),
                 ),
               ),
@@ -40,12 +42,12 @@ class AchievementsScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Overall Progress',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.lightText,
+                        color: textColor,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -61,17 +63,20 @@ class AchievementsScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              const Text(
+              Text(
                 'All Achievements',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.lightText,
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 16),
               for (final achievement in achievements) ...[
-                _AchievementTile(data: achievement),
+                _AchievementTile(
+                  data: achievement,
+                  secondaryTextColor: secondaryTextColor,
+                ),
                 const SizedBox(height: 12),
               ],
             ],
@@ -83,15 +88,21 @@ class AchievementsScreen extends ConsumerWidget {
 }
 
 class _AchievementTile extends StatelessWidget {
-  const _AchievementTile({required this.data});
+  const _AchievementTile({
+    required this.data,
+    required this.secondaryTextColor,
+  });
 
   final AchievementModel data;
+  final Color secondaryTextColor;
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
     final color = data.unlocked
         ? AppColors.primary
-        : AppColors.lightTextSecondary.withValues(alpha: .45);
+        : secondaryTextColor.withValues(alpha: .55);
 
     return GlassCard(
       borderRadius: 24,
@@ -121,18 +132,16 @@ class _AchievementTile extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
-                    color: data.unlocked
-                        ? AppColors.lightText
-                        : AppColors.lightTextSecondary,
+                    color: data.unlocked ? textColor : secondaryTextColor,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   data.subtitle,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.lightTextSecondary,
+                    color: secondaryTextColor,
                   ),
                 ),
                 const SizedBox(height: 6),

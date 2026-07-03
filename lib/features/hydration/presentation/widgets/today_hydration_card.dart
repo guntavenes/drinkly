@@ -18,6 +18,9 @@ class TodayHydrationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
     final progress = (currentAmount / dailyGoal).clamp(0.0, 1.0);
     final percent = (progress * 100).round();
     final remaining = (dailyGoal - currentAmount).clamp(0, dailyGoal);
@@ -28,23 +31,23 @@ class TodayHydrationCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text(
+              Text(
                 'Today\'s Progress',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w800,
-                  color: AppColors.lightText,
+                  color: textColor,
                 ),
               ),
               const Spacer(),
               GestureDetector(
                 onTap: onEditGoal,
-                child: const Text(
+                child: Text(
                   'Edit Goal',
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
-                    color: AppColors.lightTextSecondary,
+                    color: secondaryTextColor,
                   ),
                 ),
               ),
@@ -56,23 +59,23 @@ class TodayHydrationCard extends StatelessWidget {
             children: [
               Text(
                 _formatAmount(currentAmount),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.lightText,
+                  color: textColor,
                   letterSpacing: -1.4,
                   height: 1,
                 ),
               ),
               const SizedBox(width: 6),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 4),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
                   'ml',
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w800,
-                    color: AppColors.lightText,
+                    color: textColor,
                   ),
                 ),
               ),
@@ -100,10 +103,10 @@ class TodayHydrationCard extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             'of ${_formatAmount(dailyGoal)} ml',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
-              color: AppColors.lightTextSecondary,
+              color: secondaryTextColor,
             ),
           ),
           const SizedBox(height: 18),
@@ -153,6 +156,9 @@ class _MiniMetric extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
     return Row(
       textDirection: alignEnd ? TextDirection.rtl : TextDirection.ltr,
       children: [
@@ -165,18 +171,18 @@ class _MiniMetric extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w900,
-                color: AppColors.lightText,
+                color: textColor,
               ),
             ),
             Text(
               subtitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: AppColors.lightTextSecondary,
+                color: secondaryTextColor,
               ),
             ),
           ],

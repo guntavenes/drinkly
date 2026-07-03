@@ -12,6 +12,7 @@ class RemindersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(settingsProvider);
+    final textColor = Theme.of(context).colorScheme.onSurface;
 
     final remindersEnabled = settingsAsync.maybeWhen(
       data: (settings) => settings?.remindersEnabled ?? false,
@@ -44,19 +45,19 @@ class RemindersScreen extends ConsumerWidget {
     );
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Reminders',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.lightText,
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 28),
@@ -184,9 +185,13 @@ class RemindersScreen extends ConsumerWidget {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) {
+      builder: (sheetContext) {
+        final textColor = Theme.of(sheetContext).colorScheme.onSurface;
+        final cardColor = Theme.of(sheetContext).cardColor;
+        final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
+
         return Material(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
@@ -197,17 +202,19 @@ class RemindersScreen extends ConsumerWidget {
                   width: 42,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
+                    color: isDark
+                        ? const Color(0xFF475569)
+                        : const Color(0xFFE2E8F0),
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ),
                 const SizedBox(height: 22),
-                const Text(
+                Text(
                   'Repeat',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.lightText,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -221,8 +228,8 @@ class RemindersScreen extends ConsumerWidget {
                           .read(notificationControllerProvider)
                           .refreshSchedule();
 
-                      if (context.mounted) {
-                        Navigator.pop(context);
+                      if (sheetContext.mounted) {
+                        Navigator.pop(sheetContext);
                       }
                     },
                     child: Padding(
@@ -240,10 +247,10 @@ class RemindersScreen extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               _intervalText(interval),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
-                                color: AppColors.lightText,
+                                color: textColor,
                               ),
                             ),
                           ),
@@ -273,6 +280,8 @@ class _ReminderSwitchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
@@ -282,13 +291,10 @@ class _ReminderSwitchTile extends StatelessWidget {
             color: AppColors.primary,
           ),
           const SizedBox(width: 18),
-          const Expanded(
+          Expanded(
             child: Text(
               'Enable Reminders',
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                color: AppColors.lightText,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w800, color: textColor),
             ),
           ),
           Switch(value: value, onChanged: onChanged),
@@ -313,6 +319,9 @@ class _ReminderTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -324,24 +333,19 @@ class _ReminderTile extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.lightText,
+                style: TextStyle(fontWeight: FontWeight.w800, color: textColor),
+              ),
+            ),
+            if (value.isNotEmpty)
+              Text(
+                value,
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: secondaryTextColor,
                 ),
               ),
-            ),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppColors.lightTextSecondary,
-              ),
-            ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: AppColors.lightTextSecondary,
-            ),
+            Icon(Icons.chevron_right_rounded, color: secondaryTextColor),
           ],
         ),
       ),
@@ -358,7 +362,7 @@ class _Divider extends StatelessWidget {
       height: 1,
       indent: 56,
       endIndent: 16,
-      color: AppColors.primary.withValues(alpha: .08),
+      color: Theme.of(context).dividerColor,
     );
   }
 }

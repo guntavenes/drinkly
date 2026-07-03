@@ -1,3 +1,4 @@
+import 'package:drinkly/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,24 +24,36 @@ class SettingsScreen extends ConsumerWidget {
       orElse: () => false,
     );
 
+    final darkMode = settingsAsync.maybeWhen(
+      data: (settings) => settings?.darkMode ?? false,
+      orElse: () => false,
+    );
+
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: Column(
             children: [
               const SizedBox(height: 12),
-              const Text(
+              Text(
                 'Settings',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.lightText,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 28),
-              const _ProfileCard(),
+              _ProfileCard(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                  );
+                },
+              ),
               const SizedBox(height: 20),
               _SettingsGroup(
                 dailyGoal: dailyGoal,
@@ -53,6 +66,11 @@ class SettingsScreen extends ConsumerWidget {
                     context,
                     MaterialPageRoute(builder: (_) => const RemindersScreen()),
                   );
+                },
+                darkMode: darkMode,
+                onDarkModeChanged: (value) async {
+                  final repository = ref.read(settingsRepositoryProvider);
+                  await repository.updateDarkMode(value);
                 },
               ),
               const SizedBox(height: 20),
@@ -70,13 +88,15 @@ class SettingsScreen extends ConsumerWidget {
     int currentGoal,
   ) {
     final goals = [1500, 2000, 2500, 3000, 3500, 4000];
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final cardColor = Theme.of(context).cardColor;
 
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder: (_) {
         return Material(
-          color: Colors.white,
+          color: cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
@@ -92,12 +112,12 @@ class SettingsScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 22),
-                const Text(
+                Text(
                   'Daily Goal',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.lightText,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -126,10 +146,10 @@ class SettingsScreen extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               '$goal ml',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w800,
-                                color: AppColors.lightText,
+                                color: textColor,
                               ),
                             ),
                           ),
@@ -152,58 +172,64 @@ class SettingsScreen extends ConsumerWidget {
 }
 
 class _ProfileCard extends StatelessWidget {
-  const _ProfileCard();
+  const _ProfileCard({required this.onTap});
+
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return GlassCard(
-      padding: const EdgeInsets.all(18),
-      borderRadius: 24,
-      child: Row(
-        children: [
-          Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: .12),
-              shape: BoxShape.circle,
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(24),
+      onTap: onTap,
+      child: GlassCard(
+        padding: const EdgeInsets.all(18),
+        borderRadius: 24,
+        child: Row(
+          children: [
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: .12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.water_drop_rounded,
+                color: AppColors.primary,
+                size: 30,
+              ),
             ),
-            child: const Icon(
-              Icons.water_drop_rounded,
-              color: AppColors.primary,
-              size: 30,
-            ),
-          ),
-          const SizedBox(width: 14),
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Drinkly',
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.w900,
-                    color: AppColors.lightText,
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Drinkly',
+                    style: TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                    ),
                   ),
-                ),
-                SizedBox(height: 2),
-                Text(
-                  'Stay hydrated every day',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.lightTextSecondary,
+                  const SizedBox(height: 2),
+                  Text(
+                    'Personalize your daily goal',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: secondaryTextColor,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const Icon(
-            Icons.chevron_right_rounded,
-            color: AppColors.lightTextSecondary,
-          ),
-        ],
+            Icon(Icons.chevron_right_rounded, color: secondaryTextColor),
+          ],
+        ),
       ),
     );
   }
@@ -215,12 +241,16 @@ class _SettingsGroup extends StatelessWidget {
     required this.remindersEnabled,
     required this.onDailyGoalTap,
     required this.onReminderTap,
+    required this.darkMode,
+    required this.onDarkModeChanged,
   });
 
   final int dailyGoal;
   final bool remindersEnabled;
   final VoidCallback onDailyGoalTap;
   final VoidCallback onReminderTap;
+  final bool darkMode;
+  final ValueChanged<bool> onDarkModeChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -252,8 +282,8 @@ class _SettingsGroup extends StatelessWidget {
           _SettingsSwitchTile(
             icon: Icons.dark_mode_outlined,
             title: 'Dark Mode',
-            value: false,
-            onChanged: (_) {},
+            value: darkMode,
+            onChanged: onDarkModeChanged,
           ),
         ],
       ),
@@ -303,6 +333,9 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
     return InkWell(
       onTap: onTap,
       child: Padding(
@@ -314,25 +347,19 @@ class _SettingsTile extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.lightText,
-                ),
+                style: TextStyle(fontWeight: FontWeight.w800, color: textColor),
               ),
             ),
             if (value.isNotEmpty)
               Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.lightTextSecondary,
+                  color: secondaryTextColor,
                 ),
               ),
-            const Icon(
-              Icons.chevron_right_rounded,
-              color: AppColors.lightTextSecondary,
-            ),
+            Icon(Icons.chevron_right_rounded, color: secondaryTextColor),
           ],
         ),
       ),
@@ -355,6 +382,8 @@ class _SettingsSwitchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
@@ -364,10 +393,7 @@ class _SettingsSwitchTile extends StatelessWidget {
           Expanded(
             child: Text(
               title,
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                color: AppColors.lightText,
-              ),
+              style: TextStyle(fontWeight: FontWeight.w800, color: textColor),
             ),
           ),
           Switch(value: value, onChanged: onChanged),
@@ -386,7 +412,7 @@ class _Divider extends StatelessWidget {
       height: 1,
       indent: 56,
       endIndent: 16,
-      color: AppColors.primary.withValues(alpha: .08),
+      color: Theme.of(context).dividerColor,
     );
   }
 }

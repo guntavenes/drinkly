@@ -19,15 +19,17 @@ class OverviewGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Overview',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w900,
-            color: AppColors.lightText,
+            color: textColor,
           ),
         ),
         const SizedBox(height: 16),
@@ -70,11 +72,6 @@ class OverviewGrid extends StatelessWidget {
     if (ml == 0) return '0L';
     return '${(ml / 1000).toStringAsFixed(1)}L';
   }
-
-  String _goalPercentText(int ml) {
-    final percent = ((ml / 2500) * 100).round();
-    return '$percent%';
-  }
 }
 
 class OverviewCard extends StatelessWidget {
@@ -91,6 +88,9 @@ class OverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
     return Expanded(
       child: GlassCard(
         padding: const EdgeInsets.all(16),
@@ -105,18 +105,18 @@ class OverviewCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
-                      color: AppColors.lightText,
+                      color: textColor,
                     ),
                   ),
                   Text(
                     subtitle,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.lightTextSecondary,
+                      color: secondaryTextColor,
                     ),
                   ),
                 ],

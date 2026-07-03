@@ -40,6 +40,14 @@ class AppSettings extends Table {
 
   IntColumn get reminderIntervalMinutes =>
       integer().withDefault(const Constant(120))();
+
+  TextColumn get userName => text().nullable()();
+
+  IntColumn get weightKg => integer().nullable()();
+
+  IntColumn get activityLevel => integer().withDefault(const Constant(1))();
+
+  DateTimeColumn get lastCelebratedDate => dateTime().nullable()();
 }
 
 @DriftDatabase(tables: [HydrationEntries, AppSettings])
@@ -47,7 +55,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration {
@@ -70,6 +78,15 @@ class AppDatabase extends _$AppDatabase {
           await m.addColumn(appSettings, appSettings.reminderEndHour);
           await m.addColumn(appSettings, appSettings.reminderEndMinute);
           await m.addColumn(appSettings, appSettings.reminderIntervalMinutes);
+        }
+
+        if (from < 4) {
+          await m.addColumn(appSettings, appSettings.userName);
+          await m.addColumn(appSettings, appSettings.weightKg);
+          await m.addColumn(appSettings, appSettings.activityLevel);
+        }
+        if (from < 5) {
+          await m.addColumn(appSettings, appSettings.lastCelebratedDate);
         }
       },
     );
@@ -178,6 +195,32 @@ class AppDatabase extends _$AppDatabase {
     await update(
       appSettings,
     ).write(AppSettingsCompanion(reminderIntervalMinutes: Value(minutes)));
+  }
+
+  Future<void> updateProfile({
+    String? userName,
+    int? weightKg,
+    required int activityLevel,
+  }) async {
+    await update(appSettings).write(
+      AppSettingsCompanion(
+        userName: Value(userName),
+        weightKg: Value(weightKg),
+        activityLevel: Value(activityLevel),
+      ),
+    );
+  }
+
+  Future<void> updateLastCelebratedDate(DateTime date) async {
+    await update(
+      appSettings,
+    ).write(AppSettingsCompanion(lastCelebratedDate: Value(date)));
+  }
+
+  Future<void> updateDarkMode(bool enabled) async {
+    await update(
+      appSettings,
+    ).write(AppSettingsCompanion(darkMode: Value(enabled)));
   }
 }
 

@@ -7,6 +7,10 @@ class GreetingHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+    final cardColor = Theme.of(context).cardColor;
+
     return Row(
       children: [
         Expanded(
@@ -14,30 +18,30 @@ class GreetingHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${_greeting()}, Enes 👋',
-                style: const TextStyle(
+                '${_greeting()} 👋',
+                style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.lightTextSecondary,
+                  color: secondaryTextColor,
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Stay Hydrated',
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.lightText,
+                  color: textColor,
                   letterSpacing: -0.8,
                 ),
               ),
               const SizedBox(height: 6),
-              const Text(
+              Text(
                 'You\'ve got this!',
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.lightTextSecondary,
+                  color: secondaryTextColor,
                 ),
               ),
             ],
@@ -47,7 +51,7 @@ class GreetingHeader extends StatelessWidget {
           width: 56,
           height: 56,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: .9),
+            color: cardColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(

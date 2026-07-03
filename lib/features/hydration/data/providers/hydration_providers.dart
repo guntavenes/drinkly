@@ -145,3 +145,39 @@ final currentStreakProvider = Provider<int>((ref) {
     orElse: () => 0,
   );
 });
+
+final smartQuickAddAmountsProvider = Provider<List<int>>((ref) {
+  final entriesAsync = ref.watch(allHydrationEntriesProvider);
+
+  return entriesAsync.maybeWhen(
+    data: (entries) {
+      if (entries.isEmpty) {
+        return [250, 500, 750];
+      }
+
+      final counter = <int, int>{};
+
+      for (final entry in entries) {
+        counter[entry.amount] = (counter[entry.amount] ?? 0) + 1;
+      }
+
+      final sorted = counter.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
+
+      final amounts = sorted.map((entry) => entry.key).take(3).toList();
+
+      while (amounts.length < 3) {
+        for (final fallback in [250, 500, 750]) {
+          if (!amounts.contains(fallback)) {
+            amounts.add(fallback);
+          }
+
+          if (amounts.length == 3) break;
+        }
+      }
+
+      return amounts;
+    },
+    orElse: () => [250, 500, 750],
+  );
+});

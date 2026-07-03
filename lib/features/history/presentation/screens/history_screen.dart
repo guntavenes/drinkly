@@ -13,16 +13,18 @@ class HistoryScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entriesAsync = ref.watch(allHydrationEntriesProvider);
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
 
     return Scaffold(
-      backgroundColor: AppColors.lightBackground,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
           child: entriesAsync.when(
             data: (entries) {
               if (entries.isEmpty) {
-                return const _EmptyHistory();
+                return _EmptyHistory(secondaryTextColor: secondaryTextColor);
               }
 
               final groupedEntries = _groupEntriesByDay(entries);
@@ -31,13 +33,13 @@ class HistoryScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const SizedBox(height: 12),
-                  const Center(
+                  Center(
                     child: Text(
                       'History',
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.w900,
-                        color: AppColors.lightText,
+                        color: textColor,
                       ),
                     ),
                   ),
@@ -65,6 +67,7 @@ class HistoryScreen extends ConsumerWidget {
                           final repository = ref.read(
                             hydrationRepositoryProvider,
                           );
+
                           await repository.deleteEntry(entry.id);
 
                           if (context.mounted) {
@@ -117,9 +120,7 @@ class HistoryScreen extends ConsumerWidget {
     final today = DateTime(now.year, now.month, now.day);
     final target = DateTime(date.year, date.month, date.day);
 
-    if (target == today) {
-      return 'Today';
-    }
+    if (target == today) return 'Today';
 
     if (target == today.subtract(const Duration(days: 1))) {
       return 'Yesterday';
@@ -150,19 +151,21 @@ class _HistoryEntryTile extends StatelessWidget {
 }
 
 class _EmptyHistory extends StatelessWidget {
-  const _EmptyHistory();
+  const _EmptyHistory({required this.secondaryTextColor});
+
+  final Color secondaryTextColor;
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Padding(
-        padding: EdgeInsets.only(top: 120),
+        padding: const EdgeInsets.only(top: 120),
         child: Text(
           'No history yet.',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: AppColors.lightTextSecondary,
+            color: secondaryTextColor,
           ),
         ),
       ),

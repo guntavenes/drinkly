@@ -42,4 +42,24 @@ class SettingsRepository {
   Future<void> updateReminderInterval(int minutes) async {
     await _database.updateReminderInterval(minutes);
   }
+
+  Future<void> updateProfile({
+    String? userName,
+    int? weightKg,
+    required int activityLevel,
+  }) async {
+    await _database.updateProfile(
+      userName: userName,
+      weightKg: weightKg,
+      activityLevel: activityLevel,
+    );
+  }
+
+  Future<void> updateLastCelebratedDate(DateTime date) async {
+    await _database.updateLastCelebratedDate(date);
+  }
+
+  Future<void> updateDarkMode(bool enabled) async {
+    await _database.updateDarkMode(enabled);
+  }
 }

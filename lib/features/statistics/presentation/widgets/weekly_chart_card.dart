@@ -11,22 +11,26 @@ class WeeklyChartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+    final gridColor = Theme.of(context).dividerColor.withValues(alpha: .45);
+
     return GlassCard(
       borderRadius: 28,
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.bar_chart_rounded, color: AppColors.primary),
-              SizedBox(width: 8),
+              const Icon(Icons.bar_chart_rounded, color: AppColors.primary),
+              const SizedBox(width: 8),
               Text(
                 'Weekly Hydration',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.lightText,
+                  color: textColor,
                 ),
               ),
             ],
@@ -43,11 +47,8 @@ class WeeklyChartCard extends StatelessWidget {
                   show: true,
                   drawVerticalLine: false,
                   horizontalInterval: 1000,
-                  getDrawingHorizontalLine: (value) {
-                    return FlLine(
-                      color: Colors.grey.withValues(alpha: .15),
-                      strokeWidth: 1,
-                    );
+                  getDrawingHorizontalLine: (_) {
+                    return FlLine(color: gridColor, strokeWidth: 1);
                   },
                 ),
                 titlesData: FlTitlesData(
@@ -58,13 +59,17 @@ class WeeklyChartCard extends StatelessWidget {
                       showTitles: true,
                       reservedSize: 34,
                       interval: 1000,
-                      getTitlesWidget: _leftTitle,
+                      getTitlesWidget: (value, meta) {
+                        return _leftTitle(value, meta, secondaryTextColor);
+                      },
                     ),
                   ),
                   bottomTitles: AxisTitles(
                     sideTitles: SideTitles(
                       showTitles: true,
-                      getTitlesWidget: _bottomTitle,
+                      getTitlesWidget: (value, meta) {
+                        return _bottomTitle(value, meta, secondaryTextColor);
+                      },
                     ),
                   ),
                 ),
@@ -113,26 +118,22 @@ class WeeklyChartCard extends StatelessWidget {
     if (values.isEmpty) return 2500;
 
     final max = values.reduce((a, b) => a > b ? a : b);
-
     if (max < 2500) return 2500;
 
     return (max + 500).toDouble();
   }
 
-  Widget _leftTitle(double value, TitleMeta meta) {
-    if (value % 1000 != 0) {
-      return const SizedBox.shrink();
-    }
+  Widget _leftTitle(double value, TitleMeta meta, Color color) {
+    if (value % 1000 != 0) return const SizedBox.shrink();
 
     return Text(
       '${(value / 1000).toInt()}L',
-      style: const TextStyle(fontSize: 11, color: AppColors.lightTextSecondary),
+      style: TextStyle(fontSize: 11, color: color),
     );
   }
 
-  Widget _bottomTitle(double value, TitleMeta meta) {
+  Widget _bottomTitle(double value, TitleMeta meta, Color color) {
     const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
     final index = value.toInt();
 
     if (index < 0 || index >= days.length) {
@@ -143,10 +144,10 @@ class WeeklyChartCard extends StatelessWidget {
       meta: meta,
       child: Text(
         days[index],
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w700,
-          color: AppColors.lightTextSecondary,
+          color: color,
         ),
       ),
     );

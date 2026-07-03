@@ -11,9 +11,10 @@ class PrimaryProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final safeValue = value.clamp(0.0, 1.0);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return TweenAnimationBuilder<double>(
-      tween: Tween<double>(begin: 0, end: safeValue),
+      tween: Tween(begin: 0, end: safeValue),
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeOutCubic,
       builder: (context, animatedValue, child) {
@@ -22,8 +23,10 @@ class PrimaryProgressBar extends StatelessWidget {
           child: LinearProgressIndicator(
             value: animatedValue,
             minHeight: height,
-            backgroundColor: AppColors.primary.withValues(alpha: 0.10),
-            valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
+            backgroundColor: isDark
+                ? const Color(0xFF334155)
+                : AppColors.primary.withValues(alpha: .10),
+            valueColor: const AlwaysStoppedAnimation(AppColors.primary),
           ),
         );
       },
