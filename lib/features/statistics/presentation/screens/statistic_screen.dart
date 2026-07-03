@@ -1,4 +1,6 @@
 import 'package:drinkly/features/statistics/data/providers/insight_providers.dart';
+import 'package:drinkly/features/statistics/data/providers/statistics_providers.dart';
+import 'package:drinkly/features/statistics/domain/models/statistics_period.dart';
 import 'package:drinkly/features/statistics/presentation/widgets/hydration_summary_card.dart';
 import 'package:drinkly/features/statistics/presentation/widgets/insights_card.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +23,7 @@ class StatisticsScreen extends ConsumerWidget {
     final currentStreak = ref.watch(currentStreakProvider);
     final averageAmount = ref.watch(averageDrinkAmountProvider);
     final favoriteAmount = ref.watch(favoriteDrinkAmountProvider);
-
+    final period = ref.watch(statisticsPeriodProvider);
     final textColor = Theme.of(context).colorScheme.onSurface;
 
     return Scaffold(
@@ -45,6 +47,19 @@ class StatisticsScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 24),
               const PeriodSelector(),
+              const SizedBox(height: 10),
+              Center(
+                child: Text(
+                  _periodLabel(period),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: .55),
+                  ),
+                ),
+              ),
               const SizedBox(height: 24),
               HydrationSummaryCard(weeklyTotal: weeklyTotal),
               const SizedBox(height: 24),
@@ -66,5 +81,16 @@ class StatisticsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  String _periodLabel(StatisticsPeriod period) {
+    switch (period) {
+      case StatisticsPeriod.week:
+        return 'Showing this week';
+      case StatisticsPeriod.month:
+        return 'Month view coming next';
+      case StatisticsPeriod.year:
+        return 'Year view coming next';
+    }
   }
 }
