@@ -474,6 +474,20 @@ class $AppSettingsTable extends AppSettings
         type: DriftSqlType.dateTime,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _onboardingCompletedMeta =
+      const VerificationMeta('onboardingCompleted');
+  @override
+  late final GeneratedColumn<bool> onboardingCompleted = GeneratedColumn<bool>(
+    'onboarding_completed',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("onboarding_completed" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -490,6 +504,7 @@ class $AppSettingsTable extends AppSettings
     weightKg,
     activityLevel,
     lastCelebratedDate,
+    onboardingCompleted,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -608,6 +623,15 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('onboarding_completed')) {
+      context.handle(
+        _onboardingCompletedMeta,
+        onboardingCompleted.isAcceptableOrUnknown(
+          data['onboarding_completed']!,
+          _onboardingCompletedMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -673,6 +697,10 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_celebrated_date'],
       ),
+      onboardingCompleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}onboarding_completed'],
+      )!,
     );
   }
 
@@ -697,6 +725,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final int? weightKg;
   final int activityLevel;
   final DateTime? lastCelebratedDate;
+  final bool onboardingCompleted;
   const AppSetting({
     required this.id,
     required this.dailyGoal,
@@ -712,6 +741,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     this.weightKg,
     required this.activityLevel,
     this.lastCelebratedDate,
+    required this.onboardingCompleted,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -736,6 +766,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     if (!nullToAbsent || lastCelebratedDate != null) {
       map['last_celebrated_date'] = Variable<DateTime>(lastCelebratedDate);
     }
+    map['onboarding_completed'] = Variable<bool>(onboardingCompleted);
     return map;
   }
 
@@ -761,6 +792,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       lastCelebratedDate: lastCelebratedDate == null && nullToAbsent
           ? const Value.absent()
           : Value(lastCelebratedDate),
+      onboardingCompleted: Value(onboardingCompleted),
     );
   }
 
@@ -790,6 +822,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       lastCelebratedDate: serializer.fromJson<DateTime?>(
         json['lastCelebratedDate'],
       ),
+      onboardingCompleted: serializer.fromJson<bool>(
+        json['onboardingCompleted'],
+      ),
     );
   }
   @override
@@ -812,6 +847,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'weightKg': serializer.toJson<int?>(weightKg),
       'activityLevel': serializer.toJson<int>(activityLevel),
       'lastCelebratedDate': serializer.toJson<DateTime?>(lastCelebratedDate),
+      'onboardingCompleted': serializer.toJson<bool>(onboardingCompleted),
     };
   }
 
@@ -830,6 +866,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     Value<int?> weightKg = const Value.absent(),
     int? activityLevel,
     Value<DateTime?> lastCelebratedDate = const Value.absent(),
+    bool? onboardingCompleted,
   }) => AppSetting(
     id: id ?? this.id,
     dailyGoal: dailyGoal ?? this.dailyGoal,
@@ -848,6 +885,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     lastCelebratedDate: lastCelebratedDate.present
         ? lastCelebratedDate.value
         : this.lastCelebratedDate,
+    onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -881,6 +919,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       lastCelebratedDate: data.lastCelebratedDate.present
           ? data.lastCelebratedDate.value
           : this.lastCelebratedDate,
+      onboardingCompleted: data.onboardingCompleted.present
+          ? data.onboardingCompleted.value
+          : this.onboardingCompleted,
     );
   }
 
@@ -900,7 +941,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('userName: $userName, ')
           ..write('weightKg: $weightKg, ')
           ..write('activityLevel: $activityLevel, ')
-          ..write('lastCelebratedDate: $lastCelebratedDate')
+          ..write('lastCelebratedDate: $lastCelebratedDate, ')
+          ..write('onboardingCompleted: $onboardingCompleted')
           ..write(')'))
         .toString();
   }
@@ -921,6 +963,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     weightKg,
     activityLevel,
     lastCelebratedDate,
+    onboardingCompleted,
   );
   @override
   bool operator ==(Object other) =>
@@ -939,7 +982,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.userName == this.userName &&
           other.weightKg == this.weightKg &&
           other.activityLevel == this.activityLevel &&
-          other.lastCelebratedDate == this.lastCelebratedDate);
+          other.lastCelebratedDate == this.lastCelebratedDate &&
+          other.onboardingCompleted == this.onboardingCompleted);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -957,6 +1001,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<int?> weightKg;
   final Value<int> activityLevel;
   final Value<DateTime?> lastCelebratedDate;
+  final Value<bool> onboardingCompleted;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.dailyGoal = const Value.absent(),
@@ -972,6 +1017,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.weightKg = const Value.absent(),
     this.activityLevel = const Value.absent(),
     this.lastCelebratedDate = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -988,6 +1034,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.weightKg = const Value.absent(),
     this.activityLevel = const Value.absent(),
     this.lastCelebratedDate = const Value.absent(),
+    this.onboardingCompleted = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -1004,6 +1051,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<int>? weightKg,
     Expression<int>? activityLevel,
     Expression<DateTime>? lastCelebratedDate,
+    Expression<bool>? onboardingCompleted,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1023,6 +1071,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       if (activityLevel != null) 'activity_level': activityLevel,
       if (lastCelebratedDate != null)
         'last_celebrated_date': lastCelebratedDate,
+      if (onboardingCompleted != null)
+        'onboarding_completed': onboardingCompleted,
     });
   }
 
@@ -1041,6 +1091,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<int?>? weightKg,
     Value<int>? activityLevel,
     Value<DateTime?>? lastCelebratedDate,
+    Value<bool>? onboardingCompleted,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -1058,6 +1109,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       weightKg: weightKg ?? this.weightKg,
       activityLevel: activityLevel ?? this.activityLevel,
       lastCelebratedDate: lastCelebratedDate ?? this.lastCelebratedDate,
+      onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
     );
   }
 
@@ -1110,6 +1162,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
         lastCelebratedDate.value,
       );
     }
+    if (onboardingCompleted.present) {
+      map['onboarding_completed'] = Variable<bool>(onboardingCompleted.value);
+    }
     return map;
   }
 
@@ -1129,7 +1184,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('userName: $userName, ')
           ..write('weightKg: $weightKg, ')
           ..write('activityLevel: $activityLevel, ')
-          ..write('lastCelebratedDate: $lastCelebratedDate')
+          ..write('lastCelebratedDate: $lastCelebratedDate, ')
+          ..write('onboardingCompleted: $onboardingCompleted')
           ..write(')'))
         .toString();
   }
@@ -1349,6 +1405,7 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<int?> weightKg,
       Value<int> activityLevel,
       Value<DateTime?> lastCelebratedDate,
+      Value<bool> onboardingCompleted,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -1366,6 +1423,7 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<int?> weightKg,
       Value<int> activityLevel,
       Value<DateTime?> lastCelebratedDate,
+      Value<bool> onboardingCompleted,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -1444,6 +1502,11 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<DateTime> get lastCelebratedDate => $composableBuilder(
     column: $table.lastCelebratedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1526,6 +1589,11 @@ class $$AppSettingsTableOrderingComposer
     column: $table.lastCelebratedDate,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -1594,6 +1662,11 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.lastCelebratedDate,
     builder: (column) => column,
   );
+
+  GeneratedColumn<bool> get onboardingCompleted => $composableBuilder(
+    column: $table.onboardingCompleted,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -1641,6 +1714,7 @@ class $$AppSettingsTableTableManager
                 Value<int?> weightKg = const Value.absent(),
                 Value<int> activityLevel = const Value.absent(),
                 Value<DateTime?> lastCelebratedDate = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 dailyGoal: dailyGoal,
@@ -1656,6 +1730,7 @@ class $$AppSettingsTableTableManager
                 weightKg: weightKg,
                 activityLevel: activityLevel,
                 lastCelebratedDate: lastCelebratedDate,
+                onboardingCompleted: onboardingCompleted,
               ),
           createCompanionCallback:
               ({
@@ -1673,6 +1748,7 @@ class $$AppSettingsTableTableManager
                 Value<int?> weightKg = const Value.absent(),
                 Value<int> activityLevel = const Value.absent(),
                 Value<DateTime?> lastCelebratedDate = const Value.absent(),
+                Value<bool> onboardingCompleted = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 dailyGoal: dailyGoal,
@@ -1688,6 +1764,7 @@ class $$AppSettingsTableTableManager
                 weightKg: weightKg,
                 activityLevel: activityLevel,
                 lastCelebratedDate: lastCelebratedDate,
+                onboardingCompleted: onboardingCompleted,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

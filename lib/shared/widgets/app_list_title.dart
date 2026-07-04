@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-import '../../core/theme/app_colors.dart';
 import 'glass_card.dart';
 
 class AppListTile extends StatelessWidget {

@@ -48,6 +48,9 @@ class AppSettings extends Table {
   IntColumn get activityLevel => integer().withDefault(const Constant(1))();
 
   DateTimeColumn get lastCelebratedDate => dateTime().nullable()();
+
+  BoolColumn get onboardingCompleted =>
+      boolean().withDefault(const Constant(false))();
 }
 
 @DriftDatabase(tables: [HydrationEntries, AppSettings])
@@ -55,7 +58,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration {
@@ -87,6 +90,9 @@ class AppDatabase extends _$AppDatabase {
         }
         if (from < 5) {
           await m.addColumn(appSettings, appSettings.lastCelebratedDate);
+        }
+        if (from < 6) {
+          await m.addColumn(appSettings, appSettings.onboardingCompleted);
         }
       },
     );
@@ -221,6 +227,12 @@ class AppDatabase extends _$AppDatabase {
     await update(
       appSettings,
     ).write(AppSettingsCompanion(darkMode: Value(enabled)));
+  }
+
+  Future<void> updateOnboardingCompleted(bool completed) async {
+    await update(
+      appSettings,
+    ).write(AppSettingsCompanion(onboardingCompleted: Value(completed)));
   }
 }
 

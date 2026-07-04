@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/theme/app_theme.dart';
+import '../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../features/settings/data/providers/settings_providers.dart';
 import 'app_shell.dart';
 
@@ -17,13 +18,18 @@ class DrinklyApp extends ConsumerWidget {
       orElse: () => false,
     );
 
+    final onboardingCompleted = settingsAsync.maybeWhen(
+      data: (settings) => settings?.onboardingCompleted ?? false,
+      orElse: () => false,
+    );
+
     return MaterialApp(
       title: 'Drinkly',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
-      home: const AppShell(),
+      home: onboardingCompleted ? const AppShell() : const OnboardingScreen(),
     );
   }
 }

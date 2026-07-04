@@ -62,4 +62,8 @@ class SettingsRepository {
   Future<void> updateDarkMode(bool enabled) async {
     await _database.updateDarkMode(enabled);
   }
+
+  Future<void> updateOnboardingCompleted(bool completed) async {
+    await _database.updateOnboardingCompleted(completed);
+  }
 }
