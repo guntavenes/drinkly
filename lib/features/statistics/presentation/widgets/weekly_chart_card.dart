@@ -1,3 +1,4 @@
+import 'package:drinkly/core/utils/formatters.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
@@ -85,7 +86,7 @@ class WeeklyChartCard extends StatelessWidget {
                     getTooltipColor: (_) => AppColors.primary,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       return BarTooltipItem(
-                        '${rod.toY.toInt()} ml',
+                        Formatters.formatVolume(rod.toY.toInt()),
                         const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

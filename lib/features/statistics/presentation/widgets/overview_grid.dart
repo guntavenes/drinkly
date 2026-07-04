@@ -1,3 +1,4 @@
+import 'package:drinkly/core/utils/formatters.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -37,13 +38,13 @@ class OverviewGrid extends StatelessWidget {
           children: [
             OverviewCard(
               icon: Icons.water_drop_outlined,
-              title: _formatLiter(weeklyTotal),
+              title: Formatters.formatVolume(weeklyTotal),
               subtitle: 'This Week',
             ),
             const SizedBox(width: 12),
             OverviewCard(
               icon: Icons.show_chart_rounded,
-              title: _formatLiter(dailyAverage.round()),
+              title: Formatters.formatVolume(dailyAverage.round()),
               subtitle: 'Week Average',
             ),
           ],
@@ -53,7 +54,7 @@ class OverviewGrid extends StatelessWidget {
           children: [
             OverviewCard(
               icon: Icons.emoji_events_outlined,
-              title: _formatLiter(bestDay),
+              title: Formatters.formatVolume(bestDay),
               subtitle: 'Best Day',
             ),
             const SizedBox(width: 12),
@@ -66,11 +67,6 @@ class OverviewGrid extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _formatLiter(int ml) {
-    if (ml == 0) return '0L';
-    return '${(ml / 1000).toStringAsFixed(1)}L';
   }
 }
 

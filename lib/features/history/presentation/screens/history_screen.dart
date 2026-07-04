@@ -1,3 +1,4 @@
+import 'package:drinkly/core/utils/formatters.dart';
 import 'package:drinkly/shared/widgets/app_list_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -288,7 +289,7 @@ class _DayHistoryCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${_formatAmount(total)} ml • ${entries.length} entries',
+                        '${Formatters.formatAmount(total)} ml • ${entries.length} entries',
                         style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -299,7 +300,7 @@ class _DayHistoryCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${(total / 1000).toStringAsFixed(1)} L',
+                  Formatters.formatVolume(total),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
@@ -354,13 +355,6 @@ class _DayHistoryCard extends StatelessWidget {
               : const SizedBox.shrink(),
         ),
       ],
-    );
-  }
-
-  String _formatAmount(int value) {
-    return value.toString().replaceAllMapped(
-      RegExp(r'\B(?=(\d{3})+(?!\d))'),
-      (match) => ',',
     );
   }
 }

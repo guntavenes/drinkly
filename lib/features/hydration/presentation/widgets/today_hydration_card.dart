@@ -1,3 +1,4 @@
+import 'package:drinkly/core/utils/formatters.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -58,7 +59,7 @@ class TodayHydrationCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                _formatAmount(currentAmount),
+                Formatters.formatAmount(currentAmount),
                 style: TextStyle(
                   fontSize: 42,
                   fontWeight: FontWeight.w900,
@@ -102,7 +103,7 @@ class TodayHydrationCard extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-            'of ${_formatAmount(dailyGoal)} ml',
+            'of ${Formatters.formatAmount(dailyGoal)} ml',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -116,13 +117,13 @@ class TodayHydrationCard extends StatelessWidget {
             children: [
               _MiniMetric(
                 icon: Icons.water_drop_outlined,
-                title: '${_formatAmount(remaining)} ml',
+                title: '${Formatters.formatAmount(remaining)} ml',
                 subtitle: 'left to reach your goal',
               ),
               const Spacer(),
               _MiniMetric(
                 icon: Icons.flag_rounded,
-                title: '${_formatAmount(dailyGoal)} ml',
+                title: '${Formatters.formatAmount(dailyGoal)} ml',
                 subtitle: 'Daily Goal',
                 alignEnd: true,
               ),
@@ -130,13 +131,6 @@ class TodayHydrationCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-
-  static String _formatAmount(int value) {
-    return value.toString().replaceAllMapped(
-      RegExp(r'\B(?=(\d{3})+(?!\d))'),
-      (match) => ',',
     );
   }
 }
