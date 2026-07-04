@@ -32,13 +32,14 @@ class HydrationRepository {
 
   Future<void> addWater({
     required int amount,
+    DateTime? createdAt,
     String drinkType = 'water',
   }) async {
     await _database.insertHydrationEntry(
       HydrationEntriesCompanion.insert(
         amount: amount,
         drinkType: Value(drinkType),
-        createdAt: DateTime.now(),
+        createdAt: createdAt ?? DateTime.now(),
       ),
     );
   }
