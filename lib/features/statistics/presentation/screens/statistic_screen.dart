@@ -1,4 +1,5 @@
 import 'package:drinkly/features/statistics/data/providers/insight_providers.dart';
+import 'package:drinkly/features/statistics/data/providers/statistics_data_providers.dart';
 import 'package:drinkly/features/statistics/data/providers/statistics_providers.dart';
 import 'package:drinkly/features/statistics/domain/models/statistics_period.dart';
 import 'package:drinkly/features/statistics/presentation/widgets/hydration_summary_card.dart';
@@ -16,10 +17,10 @@ class StatisticsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final weeklyTotals = ref.watch(weeklyHydrationTotalsProvider);
-    final weeklyTotal = ref.watch(weeklyHydrationTotalProvider);
-    final weeklyAverage = ref.watch(weeklyHydrationAverageProvider);
-    final bestDay = ref.watch(weeklyHydrationBestDayProvider);
+    final chartValues = ref.watch(statisticsChartValuesProvider);
+    final total = ref.watch(statisticsTotalProvider);
+    final average = ref.watch(statisticsAverageProvider);
+    final bestValue = ref.watch(statisticsBestValueProvider);
     final currentStreak = ref.watch(currentStreakProvider);
     final averageAmount = ref.watch(averageDrinkAmountProvider);
     final favoriteAmount = ref.watch(favoriteDrinkAmountProvider);
@@ -61,16 +62,16 @@ class StatisticsScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 24),
-              HydrationSummaryCard(weeklyTotal: weeklyTotal),
+              HydrationSummaryCard(weeklyTotal: total),
               const SizedBox(height: 24),
               OverviewGrid(
-                weeklyTotal: weeklyTotal,
-                dailyAverage: weeklyAverage,
-                bestDay: bestDay,
+                weeklyTotal: total,
+                dailyAverage: average,
+                bestDay: bestValue,
                 currentStreak: currentStreak,
               ),
               const SizedBox(height: 24),
-              WeeklyChartCard(values: weeklyTotals),
+              WeeklyChartCard(values: chartValues, period: period),
               const SizedBox(height: 24),
               InsightsCard(
                 averageAmount: averageAmount,
