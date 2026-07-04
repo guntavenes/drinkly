@@ -1,10 +1,9 @@
+import 'package:drinkly/features/splash/presentation/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/theme/app_theme.dart';
-import '../features/onboarding/presentation/screens/onboarding_screen.dart';
 import '../features/settings/data/providers/settings_providers.dart';
-import 'app_shell.dart';
 
 class DrinklyApp extends ConsumerWidget {
   const DrinklyApp({super.key});
@@ -29,7 +28,7 @@ class DrinklyApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: darkMode ? ThemeMode.dark : ThemeMode.light,
-      home: onboardingCompleted ? const AppShell() : const OnboardingScreen(),
+      home: SplashScreen(onboardingCompleted: onboardingCompleted),
     );
   }
 }

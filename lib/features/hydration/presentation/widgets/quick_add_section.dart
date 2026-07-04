@@ -11,7 +11,7 @@ class QuickAddSection extends StatelessWidget {
     required this.amounts,
   });
 
-  final Future<void> Function(int amount) onAddWater;
+  final Future<void> Function(int amount, BuildContext itemContext) onAddWater;
   final List<int> amounts;
 
   @override
@@ -39,17 +39,15 @@ class QuickAddSection extends StatelessWidget {
                 icon: Icons.water_drop_outlined,
                 label: '$amount',
                 amount: amount,
-                textColor: textColor,
                 secondaryTextColor: secondaryTextColor,
-                onTap: () => onAddWater(amount),
+                onTap: (itemContext) => onAddWater(amount, itemContext),
               ),
             _QuickAddItem(
               icon: Icons.add_rounded,
               label: 'More',
               amount: null,
-              textColor: textColor,
               secondaryTextColor: secondaryTextColor,
-              onTap: () => _showAddWaterSheet(context),
+              onTap: (_) => _showAddWaterSheet(context),
             ),
           ],
         ),
@@ -130,7 +128,7 @@ class QuickAddSection extends StatelessWidget {
                             return _AmountGridTile(
                               icon: Icons.edit_rounded,
                               title: 'Custom',
-                              onTap: () {
+                              onTap: (itemContext) {
                                 Navigator.pop(sheetContext);
                                 _showCustomAmountDialog(context);
                               },
@@ -142,9 +140,9 @@ class QuickAddSection extends StatelessWidget {
                           return _AmountGridTile(
                             icon: Icons.water_drop_outlined,
                             title: '$amount ml',
-                            onTap: () async {
+                            onTap: (itemContext) async {
                               await HapticFeedback.lightImpact();
-                              await onAddWater(amount);
+                              await onAddWater(amount, itemContext);
 
                               if (sheetContext.mounted) {
                                 Navigator.pop(sheetContext);
@@ -193,7 +191,7 @@ class QuickAddSection extends StatelessWidget {
                 if (amount == null || amount <= 0) return;
 
                 await HapticFeedback.lightImpact();
-                await onAddWater(amount);
+                await onAddWater(amount, dialogContext);
 
                 if (dialogContext.mounted) {
                   Navigator.pop(dialogContext);
@@ -208,12 +206,11 @@ class QuickAddSection extends StatelessWidget {
   }
 }
 
-class _QuickAddItem extends StatelessWidget {
+class _QuickAddItem extends StatefulWidget {
   const _QuickAddItem({
     required this.icon,
     required this.label,
     required this.amount,
-    required this.textColor,
     required this.secondaryTextColor,
     required this.onTap,
   });
@@ -221,9 +218,62 @@ class _QuickAddItem extends StatelessWidget {
   final IconData icon;
   final String label;
   final int? amount;
-  final Color textColor;
   final Color secondaryTextColor;
-  final VoidCallback onTap;
+  final void Function(BuildContext itemContext) onTap;
+
+  @override
+  State<_QuickAddItem> createState() => _QuickAddItemState();
+}
+
+class _QuickAddItemState extends State<_QuickAddItem>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _bubbleOpacity;
+  late final Animation<double> _bubbleMove;
+  late final Animation<double> _iconScale;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 650),
+    );
+
+    _bubbleOpacity = TweenSequence<double>([
+      TweenSequenceItem(tween: Tween(begin: 0, end: 1), weight: 20),
+      TweenSequenceItem(tween: Tween(begin: 1, end: 1), weight: 35),
+      TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 45),
+    ]).animate(_controller);
+
+    _bubbleMove = Tween<double>(
+      begin: 0,
+      end: -34,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+
+    _iconScale = TweenSequence<double>(
+      [
+        TweenSequenceItem(tween: Tween(begin: 1, end: .92), weight: 25),
+        TweenSequenceItem(tween: Tween(begin: .92, end: 1.06), weight: 35),
+        TweenSequenceItem(tween: Tween(begin: 1.06, end: 1), weight: 40),
+      ],
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    if (widget.amount != null) {
+      _controller.forward(from: 0);
+    }
+
+    widget.onTap(context);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -231,23 +281,73 @@ class _QuickAddItem extends StatelessWidget {
       width: 68,
       child: Column(
         children: [
-          AppIconCircle(icon: icon, onTap: onTap),
-          const SizedBox(height: 10),
+          SizedBox(
+            width: 68,
+            height: 70,
+            child: Stack(
+              alignment: Alignment.center,
+              clipBehavior: Clip.none,
+              children: [
+                AnimatedBuilder(
+                  animation: _controller,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: _iconScale.value,
+                      child: child,
+                    );
+                  },
+                  child: AppIconCircle(icon: widget.icon, onTap: _handleTap),
+                ),
+                if (widget.amount != null)
+                  AnimatedBuilder(
+                    animation: _controller,
+                    builder: (context, child) {
+                      return Positioned(
+                        top: 2 + _bubbleMove.value,
+                        child: Opacity(
+                          opacity: _bubbleOpacity.value,
+                          child: child,
+                        ),
+                      );
+                    },
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.water_drop_rounded,
+                          color: AppColors.primary,
+                          size: 24,
+                        ),
+                        Text(
+                          '${widget.amount} ml',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 4),
           Text(
-            label,
+            widget.label,
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w900,
-              color: textColor,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
-          if (amount != null)
+          if (widget.amount != null)
             Text(
               'ml',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
-                color: secondaryTextColor,
+                color: widget.secondaryTextColor,
               ),
             ),
         ],
@@ -265,7 +365,7 @@ class _AmountGridTile extends StatelessWidget {
 
   final IconData icon;
   final String title;
-  final VoidCallback onTap;
+  final void Function(BuildContext itemContext) onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -274,7 +374,7 @@ class _AmountGridTile extends StatelessWidget {
 
     return InkWell(
       borderRadius: BorderRadius.circular(20),
-      onTap: onTap,
+      onTap: () => onTap(context),
       child: Container(
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF4FAFF),

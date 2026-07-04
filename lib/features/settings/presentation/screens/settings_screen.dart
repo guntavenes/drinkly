@@ -1,14 +1,21 @@
 import 'package:drinkly/features/profile/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
-import '../../data/providers/settings_providers.dart';
 import '../../../reminders/presentation/screens/reminders_screen.dart';
+import '../../data/providers/settings_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
+
+  static const _privacyUrl = 'https://example.com/privacy';
+  static const _termsUrl = 'https://example.com/terms';
+  static const _supportEmail = 'support@drinkly.app';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -46,6 +53,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 28),
+
               _ProfileCard(
                 onTap: () {
                   Navigator.push(
@@ -54,10 +62,13 @@ class SettingsScreen extends ConsumerWidget {
                   );
                 },
               ),
+
               const SizedBox(height: 20),
+
               _SettingsGroup(
                 dailyGoal: dailyGoal,
                 remindersEnabled: remindersEnabled,
+                darkMode: darkMode,
                 onDailyGoalTap: () {
                   _showDailyGoalSheet(context, ref, dailyGoal);
                 },
@@ -67,19 +78,61 @@ class SettingsScreen extends ConsumerWidget {
                     MaterialPageRoute(builder: (_) => const RemindersScreen()),
                   );
                 },
-                darkMode: darkMode,
                 onDarkModeChanged: (value) async {
                   final repository = ref.read(settingsRepositoryProvider);
                   await repository.updateDarkMode(value);
                 },
               ),
+
               const SizedBox(height: 20),
-              const _AboutGroup(),
+
+              _AboutGroup(
+                onRateTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Rate app will be available after release.',
+                      ),
+                    ),
+                  );
+                },
+                onShareTap: () {
+                  final box = context.findRenderObject() as RenderBox?;
+
+                  SharePlus.instance.share(
+                    ShareParams(
+                      text:
+                          'Drinkly helps you build a healthy hydration habit every day 💧',
+                      sharePositionOrigin: box == null
+                          ? null
+                          : box.localToGlobal(Offset.zero) & box.size,
+                    ),
+                  );
+                },
+                onPrivacyTap: () => _openUrl(_privacyUrl),
+                onTermsTap: () => _openUrl(_termsUrl),
+                onContactTap: () => _openEmail(),
+              ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _openUrl(String url) async {
+    final uri = Uri.parse(url);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  Future<void> _openEmail() async {
+    final uri = Uri(
+      scheme: 'mailto',
+      path: _supportEmail,
+      query: 'subject=Drinkly Support',
+    );
+
+    await launchUrl(uri);
   }
 
   void _showDailyGoalSheet(
@@ -88,15 +141,16 @@ class SettingsScreen extends ConsumerWidget {
     int currentGoal,
   ) {
     final goals = [1500, 2000, 2500, 3000, 3500, 4000];
-    final textColor = Theme.of(context).colorScheme.onSurface;
-    final cardColor = Theme.of(context).cardColor;
 
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) {
+      builder: (sheetContext) {
+        final textColor = Theme.of(sheetContext).colorScheme.onSurface;
+        final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
+
         return Material(
-          color: cardColor,
+          color: Theme.of(sheetContext).cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
@@ -107,7 +161,9 @@ class SettingsScreen extends ConsumerWidget {
                   width: 42,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
+                    color: isDark
+                        ? const Color(0xFF475569)
+                        : const Color(0xFFE2E8F0),
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ),
@@ -127,8 +183,8 @@ class SettingsScreen extends ConsumerWidget {
                       final repository = ref.read(settingsRepositoryProvider);
                       await repository.updateDailyGoal(goal);
 
-                      if (context.mounted) {
-                        Navigator.pop(context);
+                      if (sheetContext.mounted) {
+                        Navigator.pop(sheetContext);
                       }
                     },
                     child: Padding(
@@ -217,7 +273,7 @@ class _ProfileCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Personalize your daily goal',
+                    'Personalize your hydration goal',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -239,17 +295,17 @@ class _SettingsGroup extends StatelessWidget {
   const _SettingsGroup({
     required this.dailyGoal,
     required this.remindersEnabled,
+    required this.darkMode,
     required this.onDailyGoalTap,
     required this.onReminderTap,
-    required this.darkMode,
     required this.onDarkModeChanged,
   });
 
   final int dailyGoal;
   final bool remindersEnabled;
+  final bool darkMode;
   final VoidCallback onDailyGoalTap;
   final VoidCallback onReminderTap;
-  final bool darkMode;
   final ValueChanged<bool> onDarkModeChanged;
 
   @override
@@ -292,28 +348,87 @@ class _SettingsGroup extends StatelessWidget {
 }
 
 class _AboutGroup extends StatelessWidget {
-  const _AboutGroup();
+  const _AboutGroup({
+    required this.onRateTap,
+    required this.onShareTap,
+    required this.onPrivacyTap,
+    required this.onTermsTap,
+    required this.onContactTap,
+  });
+
+  final VoidCallback onRateTap;
+  final VoidCallback onShareTap;
+  final VoidCallback onPrivacyTap;
+  final VoidCallback onTermsTap;
+  final VoidCallback onContactTap;
 
   @override
   Widget build(BuildContext context) {
     return GlassCard(
       padding: EdgeInsets.zero,
       borderRadius: 24,
-      child: const Column(
+      child: Column(
         children: [
+          _SettingsTile(
+            icon: Icons.star_rounded,
+            title: 'Rate Drinkly',
+            value: '',
+            onTap: onRateTap,
+          ),
+          const _Divider(),
+          _SettingsTile(
+            icon: Icons.ios_share_rounded,
+            title: 'Share Drinkly',
+            value: '',
+            onTap: onShareTap,
+          ),
+          const _Divider(),
           _SettingsTile(
             icon: Icons.privacy_tip_outlined,
             title: 'Privacy Policy',
             value: '',
+            onTap: onPrivacyTap,
           ),
-          _Divider(),
+          const _Divider(),
           _SettingsTile(
-            icon: Icons.info_outline_rounded,
-            title: 'About Drinkly',
-            value: 'v1.0.0',
+            icon: Icons.description_outlined,
+            title: 'Terms of Service',
+            value: '',
+            onTap: onTermsTap,
           ),
+          const _Divider(),
+          _SettingsTile(
+            icon: Icons.mail_outline_rounded,
+            title: 'Contact Support',
+            value: '',
+            onTap: onContactTap,
+          ),
+          const _Divider(),
+          const _VersionTile(),
         ],
       ),
+    );
+  }
+}
+
+class _VersionTile extends StatelessWidget {
+  const _VersionTile();
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snapshot) {
+        final version = snapshot.hasData
+            ? 'v${snapshot.data!.version} (${snapshot.data!.buildNumber})'
+            : 'v1.0.0';
+
+        return _SettingsTile(
+          icon: Icons.info_outline_rounded,
+          title: 'Version',
+          value: version,
+        );
+      },
     );
   }
 }
@@ -359,7 +474,8 @@ class _SettingsTile extends StatelessWidget {
                   color: secondaryTextColor,
                 ),
               ),
-            Icon(Icons.chevron_right_rounded, color: secondaryTextColor),
+            if (onTap != null)
+              Icon(Icons.chevron_right_rounded, color: secondaryTextColor),
           ],
         ),
       ),

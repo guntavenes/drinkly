@@ -1,4 +1,5 @@
 import 'package:confetti/confetti.dart';
+import 'package:drinkly/features/hydration/presentation/widgets/smart_status_card.dart';
 import 'package:drinkly/features/settings/data/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -20,11 +21,12 @@ class HomeScreen extends ConsumerStatefulWidget {
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
   late final ConfettiController _confettiController;
+  bool _celebrationInProgress = false;
+  List<int>? _fixedQuickAddAmounts;
 
   @override
   void initState() {
     super.initState();
-
     _confettiController = ConfettiController(
       duration: const Duration(seconds: 3),
     );
@@ -40,7 +42,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final currentAmount = ref.watch(todayHydrationTotalProvider);
     final settingsAsync = ref.watch(settingsProvider);
-    final quickAddAmounts = ref.watch(smartQuickAddAmountsProvider);
+    final smartQuickAddAmounts = ref.watch(smartQuickAddAmountsProvider);
+
+    _fixedQuickAddAmounts ??= List<int>.from(smartQuickAddAmounts);
+
+    final quickAddAmounts = _fixedQuickAddAmounts!;
 
     final dailyGoal = settingsAsync.maybeWhen(
       data: (settings) => settings?.dailyGoal ?? 2500,
@@ -63,30 +69,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         lastCelebratedDate.month == today.month &&
         lastCelebratedDate.day == today.day;
 
-    if (progress >= 1 && !alreadyCelebratedToday) {
+    if (progress >= 1 && !alreadyCelebratedToday && !_celebrationInProgress) {
+      _celebrationInProgress = true;
+
       WidgetsBinding.instance.addPostFrameCallback((_) async {
         final repository = ref.read(settingsRepositoryProvider);
         await repository.updateLastCelebratedDate(today);
 
+        await HapticFeedback.heavyImpact();
         _confettiController.play();
 
         if (!context.mounted) return;
 
-        showDialog(
+        await showDialog(
           context: context,
-          builder: (_) {
-            return AlertDialog(
-              title: const Text('🎉 Amazing!'),
-              content: const Text('You reached today\'s hydration goal!'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Awesome!'),
-                ),
-              ],
-            );
-          },
+          barrierDismissible: false,
+          builder: (_) => const _GoalCompletedDialog(),
         );
+
+        _celebrationInProgress = false;
       });
     }
 
@@ -120,16 +121,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         _showEditGoalSheet(context, ref, dailyGoal);
                       },
                     ),
+                    const SizedBox(height: 16),
+                    SmartStatusCard(
+                      currentAmount: currentAmount,
+                      dailyGoal: dailyGoal,
+                    ),
                     const SizedBox(height: 28),
                     QuickAddSection(
                       amounts: quickAddAmounts,
-                      onAddWater: (amount) async {
+                      onAddWater: (amount, itemContext) async {
                         await HapticFeedback.lightImpact();
 
                         final repository = ref.read(
                           hydrationRepositoryProvider,
                         );
-
                         await repository.addWater(amount: amount);
                       },
                     ),
@@ -160,9 +165,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) {
+      builder: (sheetContext) {
+        final textColor = Theme.of(sheetContext).colorScheme.onSurface;
+        final secondaryTextColor = textColor.withValues(alpha: .58);
+        final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
+
         return Material(
-          color: Colors.white,
+          color: Theme.of(sheetContext).cardColor,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           child: Container(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
@@ -173,17 +182,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   width: 42,
                   height: 5,
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE2E8F0),
+                    color: isDark
+                        ? const Color(0xFF475569)
+                        : const Color(0xFFE2E8F0),
                     borderRadius: BorderRadius.circular(999),
                   ),
                 ),
                 const SizedBox(height: 22),
-                const Text(
+                Text(
                   'Daily Goal',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.lightText,
+                    color: textColor,
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -191,11 +202,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ListTile(
                     onTap: () async {
                       final repository = ref.read(settingsRepositoryProvider);
-
                       await repository.updateDailyGoal(goal);
 
-                      if (context.mounted) {
-                        Navigator.pop(context);
+                      if (sheetContext.mounted) {
+                        Navigator.pop(sheetContext);
                       }
                     },
                     leading: const Icon(
@@ -204,9 +214,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                     title: Text(
                       '$goal ml',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w800,
-                        color: AppColors.lightText,
+                        color: textColor,
                       ),
                     ),
                     trailing: goal == currentGoal
@@ -214,13 +224,91 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             Icons.check_rounded,
                             color: AppColors.primary,
                           )
-                        : null,
+                        : Icon(
+                            Icons.chevron_right_rounded,
+                            color: secondaryTextColor,
+                          ),
                   ),
               ],
             ),
           ),
         );
       },
+    );
+  }
+}
+
+class _GoalCompletedDialog extends StatelessWidget {
+  const _GoalCompletedDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
+    return Dialog(
+      backgroundColor: Theme.of(context).cardColor,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(24, 28, 24, 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 82,
+              height: 82,
+              decoration: BoxDecoration(
+                color: AppColors.primary.withValues(alpha: .12),
+                shape: BoxShape.circle,
+              ),
+              child: const Center(
+                child: Text('🎉', style: TextStyle(fontSize: 44)),
+              ),
+            ),
+            const SizedBox(height: 22),
+            Text(
+              'Daily Goal Completed!',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                color: textColor,
+              ),
+            ),
+            const SizedBox(height: 10),
+            Text(
+              'Amazing job! You reached today\'s hydration goal. See you tomorrow 💙',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: secondaryTextColor,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                onPressed: () => Navigator.pop(context),
+                child: const Text(
+                  'Awesome!',
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

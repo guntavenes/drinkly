@@ -1,3 +1,4 @@
+import 'package:drinkly/app/app_shell.dart';
 import 'package:drinkly/features/reminders/application/notification_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +19,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   final _pageController = PageController();
   final _nameController = TextEditingController();
   final _weightController = TextEditingController();
+  String? _nameError;
+  String? _weightError;
 
   int _page = 0;
   int _activityLevel = 1;
@@ -45,6 +48,36 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   void _next() {
+    setState(() {
+      _nameError = null;
+      _weightError = null;
+    });
+
+    if (_page == 1 && _nameController.text.trim().isEmpty) {
+      setState(() {
+        _nameError = 'Please enter your name';
+      });
+      return;
+    }
+
+    if (_page == 2) {
+      final weight = int.tryParse(_weightController.text);
+
+      if (weight == null) {
+        setState(() {
+          _weightError = 'Please enter your weight';
+        });
+        return;
+      }
+
+      if (weight < 30 || weight > 250) {
+        setState(() {
+          _weightError = 'Please enter a valid weight';
+        });
+        return;
+      }
+    }
+
     if (_page < 4) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -61,15 +94,19 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final weight = int.tryParse(_weightController.text);
 
     await repository.updateProfile(
-      userName: _nameController.text.trim().isEmpty
-          ? null
-          : _nameController.text.trim(),
+      userName: _nameController.text.trim(),
       weightKg: weight,
       activityLevel: _activityLevel,
     );
 
     await repository.updateDailyGoal(_recommendedGoal);
     await repository.updateOnboardingCompleted(true);
+
+    if (!mounted) return;
+
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const AppShell()));
   }
 
   @override
@@ -100,8 +137,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     _InputPage(
                       title: 'What should we call you?',
                       subtitle: 'Personalize your Drinkly experience.',
+                      errorText: _nameError,
                       child: TextField(
                         controller: _nameController,
+                        textCapitalization: TextCapitalization.words,
+                        autofillHints: const [AutofillHints.name],
+                        onChanged: (_) {
+                          if (_nameError != null) {
+                            setState(() => _nameError = null);
+                          }
+                        },
                         decoration: const InputDecoration(
                           hintText: 'Your name',
                           border: InputBorder.none,
@@ -117,6 +162,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     _InputPage(
                       title: 'Your weight',
                       subtitle: 'We use this to calculate your daily goal.',
+                      errorText: _weightError,
                       child: TextField(
                         controller: _weightController,
                         keyboardType: TextInputType.number,
@@ -133,7 +179,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                           color: textColor,
                         ),
                         textAlign: TextAlign.center,
-                        onChanged: (_) => setState(() {}),
+                        onChanged: (_) {
+                          setState(() {
+                            _weightError = null;
+                          });
+                        },
                       ),
                     ),
                     _ActivityPage(
@@ -252,16 +302,19 @@ class _InputPage extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.child,
+    this.errorText,
   });
 
   final String title;
   final String subtitle;
   final Widget child;
+  final String? errorText;
 
   @override
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).colorScheme.onSurface;
     final secondaryTextColor = textColor.withValues(alpha: .58);
+    final hasError = errorText != null;
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -286,10 +339,47 @@ class _InputPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 28),
-        GlassCard(
-          borderRadius: 26,
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-          child: child,
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 220),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(26),
+            border: Border.all(
+              color: hasError ? Colors.redAccent : Colors.transparent,
+              width: 1.6,
+            ),
+          ),
+          child: GlassCard(
+            borderRadius: 26,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+            child: child,
+          ),
+        ),
+        AnimatedSize(
+          duration: const Duration(milliseconds: 220),
+          child: hasError
+              ? Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        size: 16,
+                        color: Colors.redAccent,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        errorText!,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.redAccent,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              : const SizedBox.shrink(),
         ),
       ],
     );

@@ -58,8 +58,8 @@ class NotificationScheduler {
 
     await NotificationService.instance.plugin.zonedSchedule(
       id,
-      NotificationMessages.randomTitle(),
-      NotificationMessages.randomBody(),
+      NotificationMessages.randomTitle(now: time),
+      NotificationMessages.randomBody(now: time),
       scheduledDate,
       const NotificationDetails(
         android: AndroidNotificationDetails(

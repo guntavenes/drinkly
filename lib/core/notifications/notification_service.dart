@@ -1,3 +1,4 @@
+import 'package:drinkly/core/notifications/notification_messages.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -82,8 +83,8 @@ class NotificationService {
     try {
       await _plugin.show(
         id,
-        '💧 Drinkly Reminder',
-        'This is a test notification.',
+        NotificationMessages.randomTitle(),
+        NotificationMessages.randomBody(),
         const NotificationDetails(
           iOS: DarwinNotificationDetails(
             presentAlert: true,
