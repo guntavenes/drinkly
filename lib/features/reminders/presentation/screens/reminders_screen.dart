@@ -98,17 +98,6 @@ class RemindersScreen extends ConsumerWidget {
                       onTap: () =>
                           _showIntervalSheet(context, ref, intervalMinutes),
                     ),
-                    const _Divider(),
-                    _ReminderTile(
-                      icon: Icons.notifications_active_rounded,
-                      title: 'Test Notification',
-                      value: '',
-                      onTap: () async {
-                        await ref
-                            .read(notificationControllerProvider)
-                            .showTestNotification();
-                      },
-                    ),
                   ],
                 ),
               ),

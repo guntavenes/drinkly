@@ -48,6 +48,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   void _next() {
+    FocusScope.of(context).unfocus();
+
     setState(() {
       _nameError = null;
       _weightError = null;
@@ -126,6 +128,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: PageView(
                   controller: _pageController,
                   onPageChanged: (index) {
+                    FocusScope.of(context).unfocus();
                     setState(() => _page = index);
                   },
                   children: [

@@ -101,25 +101,37 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                           final repository = ref.read(
                             hydrationRepositoryProvider,
                           );
+                          final messenger = ScaffoldMessenger.of(context);
 
                           await repository.deleteEntry(entry.id);
 
-                          if (!context.mounted) return;
+                          if (!mounted) return;
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Entry deleted'),
-                              action: SnackBarAction(
-                                label: 'UNDO',
-                                onPressed: () async {
-                                  await repository.addWater(
-                                    amount: entry.amount,
-                                    createdAt: entry.createdAt,
-                                  );
-                                },
+                          messenger
+                            ..clearSnackBars()
+                            ..showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 3),
+                                behavior: SnackBarBehavior.floating,
+                                content: const Text('Entry deleted'),
+                                action: SnackBarAction(
+                                  label: 'UNDO',
+                                  onPressed: () async {
+                                    messenger.clearSnackBars();
+
+                                    await repository.addWater(
+                                      amount: entry.amount,
+                                      createdAt: entry.createdAt,
+                                    );
+                                  },
+                                ),
                               ),
-                            ),
-                          );
+                            );
+
+                          Future.delayed(const Duration(seconds: 3), () {
+                            if (!mounted) return;
+                            messenger.clearSnackBars();
+                          });
                         },
                       ),
                       const SizedBox(height: 14),
