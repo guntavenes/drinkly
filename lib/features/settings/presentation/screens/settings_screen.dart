@@ -13,9 +13,11 @@ import '../../data/providers/settings_providers.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
-  static const _privacyUrl = 'https://example.com/privacy';
-  static const _termsUrl = 'https://example.com/terms';
-  static const _supportEmail = 'support@drinkly.app';
+  static const _privacyUrl =
+      'https://guntavenes.github.io/drinkly/privacy.html';
+
+  static const _termsUrl = 'https://guntavenes.github.io/drinkly/terms.html';
+  static const _supportEmail = 'guntav.enes@gmail.com';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
