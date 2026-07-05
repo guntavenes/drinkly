@@ -129,7 +129,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     const SizedBox(height: 28),
                     QuickAddSection(
                       amounts: quickAddAmounts,
-                      onAddWater: (amount, itemContext) async {
+                      onAddWater: (amount) async {
                         await HapticFeedback.lightImpact();
 
                         final repository = ref.read(

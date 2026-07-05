@@ -17,11 +17,15 @@ class SettingsScreen extends ConsumerWidget {
       'https://guntavenes.github.io/drinkly/privacy.html';
 
   static const _termsUrl = 'https://guntavenes.github.io/drinkly/terms.html';
-  static const _supportEmail = 'guntav.enes@gmail.com';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(settingsProvider);
+
+    final userName = settingsAsync.maybeWhen(
+      data: (settings) => settings?.userName ?? 'Drinkly User',
+      orElse: () => 'Drinkly User',
+    );
 
     final dailyGoal = settingsAsync.maybeWhen(
       data: (settings) => settings?.dailyGoal ?? 2500,
@@ -55,8 +59,8 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 28),
-
               _ProfileCard(
+                userName: userName,
                 onTap: () {
                   Navigator.push(
                     context,
@@ -64,9 +68,7 @@ class SettingsScreen extends ConsumerWidget {
                   );
                 },
               ),
-
               const SizedBox(height: 20),
-
               _SettingsGroup(
                 dailyGoal: dailyGoal,
                 remindersEnabled: remindersEnabled,
@@ -85,35 +87,30 @@ class SettingsScreen extends ConsumerWidget {
                   await repository.updateDarkMode(value);
                 },
               ),
-
               const SizedBox(height: 20),
-
               _AboutGroup(
-                onRateTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text(
-                        'Rate app will be available after release.',
-                      ),
-                    ),
-                  );
-                },
                 onShareTap: () {
                   final box = context.findRenderObject() as RenderBox?;
 
                   SharePlus.instance.share(
                     ShareParams(
                       text:
-                          'Drinkly helps you build a healthy hydration habit every day 💧',
+                          '💧 I\'m using Drinkly to build a healthier hydration habit.\n\nDownload Drinkly:\nhttps://apps.apple.com/',
                       sharePositionOrigin: box == null
                           ? null
                           : box.localToGlobal(Offset.zero) & box.size,
                     ),
                   );
                 },
+                onRateTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Available after App Store release'),
+                    ),
+                  );
+                },
                 onPrivacyTap: () => _openUrl(_privacyUrl),
                 onTermsTap: () => _openUrl(_termsUrl),
-                onContactTap: () => _openEmail(),
               ),
             ],
           ),
@@ -125,16 +122,6 @@ class SettingsScreen extends ConsumerWidget {
   Future<void> _openUrl(String url) async {
     final uri = Uri.parse(url);
     await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
-  Future<void> _openEmail() async {
-    final uri = Uri(
-      scheme: 'mailto',
-      path: _supportEmail,
-      query: 'subject=Drinkly Support',
-    );
-
-    await launchUrl(uri);
   }
 
   void _showDailyGoalSheet(
@@ -230,8 +217,9 @@ class SettingsScreen extends ConsumerWidget {
 }
 
 class _ProfileCard extends StatelessWidget {
-  const _ProfileCard({required this.onTap});
+  const _ProfileCard({required this.userName, required this.onTap});
 
+  final String userName;
   final VoidCallback onTap;
 
   @override
@@ -255,7 +243,7 @@ class _ProfileCard extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.water_drop_rounded,
+                Icons.person_rounded,
                 color: AppColors.primary,
                 size: 30,
               ),
@@ -266,7 +254,7 @@ class _ProfileCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Drinkly',
+                    userName,
                     style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w900,
@@ -275,7 +263,7 @@ class _ProfileCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    'Personalize your hydration goal',
+                    'Drink more. Feel better.',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -351,18 +339,16 @@ class _SettingsGroup extends StatelessWidget {
 
 class _AboutGroup extends StatelessWidget {
   const _AboutGroup({
-    required this.onRateTap,
     required this.onShareTap,
+    required this.onRateTap,
     required this.onPrivacyTap,
     required this.onTermsTap,
-    required this.onContactTap,
   });
 
-  final VoidCallback onRateTap;
   final VoidCallback onShareTap;
+  final VoidCallback onRateTap;
   final VoidCallback onPrivacyTap;
   final VoidCallback onTermsTap;
-  final VoidCallback onContactTap;
 
   @override
   Widget build(BuildContext context) {
@@ -372,21 +358,21 @@ class _AboutGroup extends StatelessWidget {
       child: Column(
         children: [
           _SettingsTile(
-            icon: Icons.star_rounded,
-            title: 'Rate Drinkly',
-            value: '',
-            onTap: onRateTap,
-          ),
-          const _Divider(),
-          _SettingsTile(
-            icon: Icons.ios_share_rounded,
+            icon: Icons.share_rounded,
             title: 'Share Drinkly',
             value: '',
             onTap: onShareTap,
           ),
           const _Divider(),
           _SettingsTile(
-            icon: Icons.privacy_tip_outlined,
+            icon: Icons.star_outline_rounded,
+            title: 'Rate Drinkly',
+            value: '',
+            onTap: onRateTap,
+          ),
+          const _Divider(),
+          _SettingsTile(
+            icon: Icons.shield_outlined,
             title: 'Privacy Policy',
             value: '',
             onTap: onPrivacyTap,
@@ -397,13 +383,6 @@ class _AboutGroup extends StatelessWidget {
             title: 'Terms of Service',
             value: '',
             onTap: onTermsTap,
-          ),
-          const _Divider(),
-          _SettingsTile(
-            icon: Icons.mail_outline_rounded,
-            title: 'Contact Support',
-            value: '',
-            onTap: onContactTap,
           ),
           const _Divider(),
           const _VersionTile(),

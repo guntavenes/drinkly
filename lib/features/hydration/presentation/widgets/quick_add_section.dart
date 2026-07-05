@@ -11,7 +11,7 @@ class QuickAddSection extends StatelessWidget {
     required this.amounts,
   });
 
-  final Future<void> Function(int amount, BuildContext itemContext) onAddWater;
+  final Future<void> Function(int amount) onAddWater;
   final List<int> amounts;
 
   @override
@@ -40,7 +40,7 @@ class QuickAddSection extends StatelessWidget {
                 label: '$amount',
                 amount: amount,
                 secondaryTextColor: secondaryTextColor,
-                onTap: (itemContext) => onAddWater(amount, itemContext),
+                onTap: (_) => onAddWater(amount),
               ),
             _QuickAddItem(
               icon: Icons.add_rounded,
@@ -141,12 +141,12 @@ class QuickAddSection extends StatelessWidget {
                             icon: Icons.water_drop_outlined,
                             title: '$amount ml',
                             onTap: (itemContext) async {
-                              await HapticFeedback.lightImpact();
-                              await onAddWater(amount, itemContext);
+                              final navigator = Navigator.of(sheetContext);
 
-                              if (sheetContext.mounted) {
-                                Navigator.pop(sheetContext);
-                              }
+                              await HapticFeedback.lightImpact();
+                              await onAddWater(amount);
+
+                              navigator.pop();
                             },
                           );
                         },
@@ -165,41 +165,118 @@ class QuickAddSection extends StatelessWidget {
   void _showCustomAmountDialog(BuildContext context) {
     final controller = TextEditingController();
 
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Custom Amount'),
-          content: TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            autofocus: true,
-            decoration: const InputDecoration(
-              hintText: 'Enter amount',
-              suffixText: 'ml',
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        final textColor = Theme.of(sheetContext).colorScheme.onSurface;
+        final secondaryTextColor = textColor.withValues(alpha: .58);
+        final isDark = Theme.of(sheetContext).brightness == Brightness.dark;
+
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            bottom: MediaQuery.of(sheetContext).viewInsets.bottom + 24,
+          ),
+          child: Material(
+            color: Theme.of(sheetContext).cardColor,
+            borderRadius: BorderRadius.circular(32),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? const Color(0xFF475569)
+                          : const Color(0xFFE2E8F0),
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  Text(
+                    'Custom Amount',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Enter how much water you drank',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  TextField(
+                    controller: controller,
+                    autofocus: true,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                    ),
+                    decoration: InputDecoration(
+                      suffixText: 'ml',
+                      filled: true,
+                      fillColor: isDark
+                          ? const Color(0xFF0F172A)
+                          : const Color(0xFFF4FAFF),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(22),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 54,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      onPressed: () async {
+                        final amount = int.tryParse(controller.text);
+                        if (amount == null || amount <= 0) return;
+
+                        final navigator = Navigator.of(sheetContext);
+
+                        await HapticFeedback.lightImpact();
+                        await onAddWater(amount);
+
+                        navigator.pop();
+                      },
+                      child: const Text(
+                        'Add Water',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(dialogContext),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                final amount = int.tryParse(controller.text);
-
-                if (amount == null || amount <= 0) return;
-
-                await HapticFeedback.lightImpact();
-                await onAddWater(amount, dialogContext);
-
-                if (dialogContext.mounted) {
-                  Navigator.pop(dialogContext);
-                }
-              },
-              child: const Text('Add'),
-            ),
-          ],
         );
       },
     );
