@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../shared/widgets/app_icon_circle.dart';
 
 class QuickAddSection extends StatelessWidget {
   const QuickAddSection({
@@ -40,14 +39,16 @@ class QuickAddSection extends StatelessWidget {
                 label: '$amount',
                 amount: amount,
                 secondaryTextColor: secondaryTextColor,
-                onTap: (_) => onAddWater(amount),
+                onTap: () => onAddWater(amount),
               ),
             _QuickAddItem(
               icon: Icons.add_rounded,
               label: 'More',
               amount: null,
               secondaryTextColor: secondaryTextColor,
-              onTap: (_) => _showAddWaterSheet(context),
+              onTap: () async {
+                _showAddWaterSheet(context);
+              },
             ),
           ],
         ),
@@ -296,7 +297,7 @@ class _QuickAddItem extends StatefulWidget {
   final String label;
   final int? amount;
   final Color secondaryTextColor;
-  final void Function(BuildContext itemContext) onTap;
+  final Future<void> Function() onTap;
 
   @override
   State<_QuickAddItem> createState() => _QuickAddItemState();
@@ -345,11 +346,15 @@ class _QuickAddItemState extends State<_QuickAddItem>
   }
 
   void _handleTap() {
+    HapticFeedback.lightImpact();
+
     if (widget.amount != null) {
       _controller.forward(from: 0);
     }
 
-    widget.onTap(context);
+    widget.onTap().catchError((error) {
+      debugPrint('Quick add error: $error');
+    });
   }
 
   @override
@@ -373,7 +378,26 @@ class _QuickAddItemState extends State<_QuickAddItem>
                       child: child,
                     );
                   },
-                  child: AppIconCircle(icon: widget.icon, onTap: _handleTap),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(22),
+                      onTap: _handleTap,
+                      child: Container(
+                        width: 56,
+                        height: 56,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: .12),
+                          borderRadius: BorderRadius.circular(22),
+                        ),
+                        child: Icon(
+                          widget.icon,
+                          color: AppColors.primary,
+                          size: 27,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
                 if (widget.amount != null)
                   AnimatedBuilder(

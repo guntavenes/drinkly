@@ -85,8 +85,10 @@ class WeeklyChartCard extends StatelessWidget {
                   touchTooltipData: BarTouchTooltipData(
                     getTooltipColor: (_) => AppColors.primary,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                      final realAmount = values[group.x.toInt()];
+
                       return BarTooltipItem(
-                        Formatters.formatVolume(rod.toY.toInt()),
+                        Formatters.formatVolume(realAmount),
                         const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,

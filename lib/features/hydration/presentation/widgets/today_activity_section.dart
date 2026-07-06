@@ -17,7 +17,7 @@ class TodayActivitySection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: 'Today\'s Activity', actionText: 'View All'),
+        const SectionHeader(title: 'Today\'s Activity'),
         const SizedBox(height: 16),
         entriesAsync.when(
           data: (entries) {

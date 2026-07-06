@@ -1,3 +1,4 @@
+import 'package:drinkly/features/reminders/presentation/screens/reminders_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -47,24 +48,32 @@ class GreetingHeader extends StatelessWidget {
             ],
           ),
         ),
-        Container(
-          width: 56,
-          height: 56,
-          decoration: BoxDecoration(
-            color: cardColor,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.primary.withValues(alpha: .10),
-                blurRadius: 18,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.notifications_none_rounded,
-            color: AppColors.primary,
-            size: 26,
+        InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: () {
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const RemindersScreen()));
+          },
+          child: Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.primary.withValues(alpha: .10),
+                  blurRadius: 18,
+                  offset: const Offset(0, 10),
+                ),
+              ],
+            ),
+            child: const Icon(
+              Icons.notifications_none_rounded,
+              color: AppColors.primary,
+              size: 26,
+            ),
           ),
         ),
       ],

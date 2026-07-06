@@ -12,7 +12,6 @@ class RemindersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settingsAsync = ref.watch(settingsProvider);
-    final textColor = Theme.of(context).colorScheme.onSurface;
 
     final remindersEnabled = settingsAsync.maybeWhen(
       data: (settings) => settings?.remindersEnabled ?? false,
@@ -52,14 +51,7 @@ class RemindersScreen extends ConsumerWidget {
           child: Column(
             children: [
               const SizedBox(height: 12),
-              Text(
-                'Reminders',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  color: textColor,
-                ),
-              ),
+              _RemindersHeader(onBack: () => Navigator.pop(context)),
               const SizedBox(height: 28),
               GlassCard(
                 padding: EdgeInsets.zero,
@@ -352,6 +344,66 @@ class _Divider extends StatelessWidget {
       indent: 56,
       endIndent: 16,
       color: Theme.of(context).dividerColor,
+    );
+  }
+}
+
+class _RemindersHeader extends StatelessWidget {
+  const _RemindersHeader({required this.onBack});
+
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
+    return Row(
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onBack,
+          child: Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: Theme.of(context).dividerColor),
+            ),
+            child: Icon(
+              Icons.arrow_back_ios_new_rounded,
+              color: textColor,
+              size: 20,
+            ),
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Reminders',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: textColor,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                'Stay hydrated every day',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: secondaryTextColor,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

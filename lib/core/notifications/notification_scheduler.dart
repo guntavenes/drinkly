@@ -28,13 +28,17 @@ class NotificationScheduler {
       settings.reminderStartMinute,
     );
 
-    final end = DateTime(
+    final rawEnd = DateTime(
       now.year,
       now.month,
       now.day,
       settings.reminderEndHour,
       settings.reminderEndMinute,
     );
+
+    final end = settings.reminderEndHour == 0 && settings.reminderEndMinute == 0
+        ? DateTime(now.year, now.month, now.day, 23, 59)
+        : rawEnd;
 
     var current = start;
     var notificationId = 1000;

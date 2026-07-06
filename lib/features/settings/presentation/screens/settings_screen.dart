@@ -312,12 +312,6 @@ class _SettingsGroup extends StatelessWidget {
             onTap: onDailyGoalTap,
           ),
           const _Divider(),
-          const _SettingsTile(
-            icon: Icons.straighten_rounded,
-            title: 'Units',
-            value: 'Milliliters',
-          ),
-          const _Divider(),
           _SettingsTile(
             icon: Icons.notifications_none_rounded,
             title: 'Reminders',
