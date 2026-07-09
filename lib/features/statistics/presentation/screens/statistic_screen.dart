@@ -1,5 +1,5 @@
+import 'package:drinkly/features/hydration/domain/models/hydration_entry_model.dart';
 import 'package:drinkly/features/statistics/data/providers/insight_providers.dart';
-import 'package:drinkly/features/statistics/data/providers/statistics_data_providers.dart';
 import 'package:drinkly/features/statistics/data/providers/statistics_providers.dart';
 import 'package:drinkly/features/statistics/domain/models/statistics_period.dart';
 import 'package:drinkly/features/statistics/presentation/widgets/hydration_summary_card.dart';
@@ -17,14 +17,24 @@ class StatisticsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final chartValues = ref.watch(statisticsChartValuesProvider);
-    final total = ref.watch(statisticsTotalProvider);
-    final average = ref.watch(statisticsAverageProvider);
-    final bestValue = ref.watch(statisticsBestValueProvider);
+    final entriesAsync = ref.watch(allHydrationEntriesProvider);
+    final period = ref.watch(statisticsPeriodProvider);
+
+    final chartValues = entriesAsync.maybeWhen(
+      data: (entries) => _chartValues(entries, period),
+      orElse: () => <int>[],
+    );
+
+    final total = chartValues.fold<int>(0, (sum, value) => sum + value);
+
+    final average = chartValues.isEmpty ? 0.0 : total / chartValues.length;
+
+    final bestValue = chartValues.isEmpty
+        ? 0
+        : chartValues.reduce((a, b) => a > b ? a : b);
     final currentStreak = ref.watch(currentStreakProvider);
     final averageAmount = ref.watch(averageDrinkAmountProvider);
     final favoriteAmount = ref.watch(favoriteDrinkAmountProvider);
-    final period = ref.watch(statisticsPeriodProvider);
     final textColor = Theme.of(context).colorScheme.onSurface;
 
     return Scaffold(
@@ -82,6 +92,63 @@ class StatisticsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  List<int> _chartValues(
+    List<HydrationEntryModel> entries,
+    StatisticsPeriod period,
+  ) {
+    final now = DateTime.now();
+
+    switch (period) {
+      case StatisticsPeriod.week:
+        final today = DateTime(now.year, now.month, now.day);
+        final start = today.subtract(Duration(days: today.weekday - 1));
+        final values = List<int>.filled(7, 0);
+
+        for (final entry in entries) {
+          final day = DateTime(
+            entry.createdAt.year,
+            entry.createdAt.month,
+            entry.createdAt.day,
+          );
+
+          final index = day.difference(start).inDays;
+
+          if (index >= 0 && index < 7) {
+            values[index] += entry.amount;
+          }
+        }
+
+        return values;
+
+      case StatisticsPeriod.month:
+        final values = List<int>.filled(4, 0);
+
+        for (final entry in entries) {
+          if (entry.createdAt.year == now.year &&
+              entry.createdAt.month == now.month) {
+            final weekIndex = ((entry.createdAt.day - 1) / 7).floor();
+
+            if (weekIndex >= 0 && weekIndex < 4) {
+              values[weekIndex] += entry.amount;
+            }
+          }
+        }
+
+        return values;
+
+      case StatisticsPeriod.year:
+        final values = List<int>.filled(12, 0);
+
+        for (final entry in entries) {
+          if (entry.createdAt.year == now.year) {
+            values[entry.createdAt.month - 1] += entry.amount;
+          }
+        }
+
+        return values;
+    }
   }
 
   String _periodLabel(StatisticsPeriod period) {

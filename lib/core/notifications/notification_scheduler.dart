@@ -11,7 +11,10 @@ class NotificationScheduler {
 
   static final NotificationScheduler instance = NotificationScheduler._();
 
-  Future<void> scheduleFromSettings(AppSetting settings) async {
+  Future<void> scheduleFromSettings(
+    AppSetting settings, {
+    int todayTotal = 0,
+  }) async {
     await NotificationService.instance.cancelAll();
 
     if (!settings.remindersEnabled) {
@@ -44,7 +47,12 @@ class NotificationScheduler {
     var notificationId = 1000;
 
     while (!current.isAfter(end)) {
-      await _scheduleDailyReminder(id: notificationId, time: current);
+      await _scheduleDailyReminder(
+        id: notificationId,
+        time: current,
+        todayTotal: todayTotal,
+        dailyGoal: settings.dailyGoal,
+      );
 
       current = current.add(
         Duration(minutes: settings.reminderIntervalMinutes),
@@ -57,6 +65,8 @@ class NotificationScheduler {
   Future<void> _scheduleDailyReminder({
     required int id,
     required DateTime time,
+    required int todayTotal,
+    required int dailyGoal,
   }) async {
     final scheduledDate = _nextInstanceOfTime(time);
 

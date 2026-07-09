@@ -33,10 +33,8 @@ class NotificationMessages {
     'Your body will thank you.',
     'Keep your hydration streak alive.',
     'Take a short break and drink some water.',
-    'You are getting closer to today\'s goal.',
     'Healthy habits start with one sip.',
     'A quick sip can make a big difference.',
-    'Don\'t wait until you feel thirsty.',
   ];
 
   static const List<String> _eveningTitles = [
@@ -48,21 +46,52 @@ class NotificationMessages {
 
   static const List<String> _eveningBodies = [
     'One last glass of water can help you finish the day well.',
-    'You are almost done for today. Keep going.',
     'A calm evening sip sounds perfect.',
     'Finish your hydration goal before the day ends.',
   ];
 
+  static String smartTitle({
+    required int todayTotal,
+    required int dailyGoal,
+    DateTime? now,
+  }) {
+    final progress = dailyGoal <= 0 ? 0.0 : todayTotal / dailyGoal;
+
+    if (progress >= 1) return '🎉 Goal completed';
+    if (progress >= .75) return '🔥 Almost there';
+    if (progress >= .4) return '💧 Nice progress';
+
+    return randomTitle(now: now);
+  }
+
+  static String smartBody({
+    required int todayTotal,
+    required int dailyGoal,
+    DateTime? now,
+  }) {
+    final remaining = (dailyGoal - todayTotal).clamp(0, dailyGoal);
+    final progress = dailyGoal <= 0 ? 0.0 : todayTotal / dailyGoal;
+
+    if (progress >= 1) {
+      return 'Today\'s goal completed. Amazing work!';
+    }
+
+    if (progress >= .75) {
+      return 'Almost there! Only $remaining ml left today.';
+    }
+
+    if (progress >= .4) {
+      return 'Nice progress. Keep sipping through the day.';
+    }
+
+    return randomBody(now: now);
+  }
+
   static String randomTitle({DateTime? now}) {
     final hour = (now ?? DateTime.now()).hour;
 
-    if (hour < 12) {
-      return _pick(_morningTitles);
-    }
-
-    if (hour >= 18) {
-      return _pick(_eveningTitles);
-    }
+    if (hour < 12) return _pick(_morningTitles);
+    if (hour >= 18) return _pick(_eveningTitles);
 
     return _pick(_dayTitles);
   }
@@ -70,13 +99,8 @@ class NotificationMessages {
   static String randomBody({DateTime? now}) {
     final hour = (now ?? DateTime.now()).hour;
 
-    if (hour < 12) {
-      return _pick(_morningBodies);
-    }
-
-    if (hour >= 18) {
-      return _pick(_eveningBodies);
-    }
+    if (hour < 12) return _pick(_morningBodies);
+    if (hour >= 18) return _pick(_eveningBodies);
 
     return _pick(_dayBodies);
   }

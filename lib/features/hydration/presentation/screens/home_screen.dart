@@ -1,5 +1,6 @@
 import 'package:confetti/confetti.dart';
 import 'package:drinkly/features/hydration/presentation/widgets/smart_status_card.dart';
+import 'package:drinkly/features/reminders/application/notification_controller.dart';
 import 'package:drinkly/features/settings/data/providers/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -135,7 +136,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         final repository = ref.read(
                           hydrationRepositoryProvider,
                         );
+
                         await repository.addWater(amount: amount);
+
+                        await ref
+                            .read(notificationControllerProvider)
+                            .refreshSchedule();
                       },
                     ),
                     const SizedBox(height: 28),

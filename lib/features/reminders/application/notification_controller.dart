@@ -1,3 +1,4 @@
+import 'package:drinkly/features/hydration/data/providers/hydration_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/notifications/notification_permission.dart';
@@ -36,7 +37,12 @@ class NotificationController {
       return;
     }
 
-    await NotificationScheduler.instance.scheduleFromSettings(settings);
+    final todayTotal = ref.read(todayHydrationTotalProvider);
+
+    await NotificationScheduler.instance.scheduleFromSettings(
+      settings,
+      todayTotal: todayTotal,
+    );
   }
 
   Future<void> refreshSchedule() async {
@@ -50,7 +56,12 @@ class NotificationController {
       return;
     }
 
-    await NotificationScheduler.instance.scheduleFromSettings(settings);
+    final todayTotal = ref.read(todayHydrationTotalProvider);
+
+    await NotificationScheduler.instance.scheduleFromSettings(
+      settings,
+      todayTotal: todayTotal,
+    );
   }
 
   Future<void> showTestNotification() async {

@@ -129,7 +129,7 @@ class QuickAddSection extends StatelessWidget {
                             return _AmountGridTile(
                               icon: Icons.edit_rounded,
                               title: 'Custom',
-                              onTap: (itemContext) {
+                              onTap: () async {
                                 Navigator.pop(sheetContext);
                                 _showCustomAmountDialog(context);
                               },
@@ -141,7 +141,7 @@ class QuickAddSection extends StatelessWidget {
                           return _AmountGridTile(
                             icon: Icons.water_drop_outlined,
                             title: '$amount ml',
-                            onTap: (itemContext) async {
+                            onTap: () async {
                               final navigator = Navigator.of(sheetContext);
 
                               await HapticFeedback.lightImpact();
@@ -306,9 +306,8 @@ class _QuickAddItem extends StatefulWidget {
 class _QuickAddItemState extends State<_QuickAddItem>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
-  late final Animation<double> _bubbleOpacity;
-  late final Animation<double> _bubbleMove;
-  late final Animation<double> _iconScale;
+  late final Animation<double> _feedbackOpacity;
+  late final Animation<Offset> _feedbackOffset;
 
   @override
   void initState() {
@@ -319,23 +318,15 @@ class _QuickAddItemState extends State<_QuickAddItem>
       duration: const Duration(milliseconds: 650),
     );
 
-    _bubbleOpacity = TweenSequence<double>([
+    _feedbackOpacity = TweenSequence<double>([
       TweenSequenceItem(tween: Tween(begin: 0, end: 1), weight: 20),
       TweenSequenceItem(tween: Tween(begin: 1, end: 1), weight: 35),
       TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 45),
     ]).animate(_controller);
 
-    _bubbleMove = Tween<double>(
-      begin: 0,
-      end: -34,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
-
-    _iconScale = TweenSequence<double>(
-      [
-        TweenSequenceItem(tween: Tween(begin: 1, end: .92), weight: 25),
-        TweenSequenceItem(tween: Tween(begin: .92, end: 1.06), weight: 35),
-        TweenSequenceItem(tween: Tween(begin: 1.06, end: 1), weight: 40),
-      ],
+    _feedbackOffset = Tween<Offset>(
+      begin: Offset.zero,
+      end: const Offset(0, -0.75),
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
   }
 
@@ -359,75 +350,74 @@ class _QuickAddItemState extends State<_QuickAddItem>
 
   @override
   Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+
     return SizedBox(
-      width: 68,
+      width: 72,
       child: Column(
         children: [
           SizedBox(
-            width: 68,
-            height: 70,
+            width: 72,
+            height: 78,
             child: Stack(
               alignment: Alignment.center,
               clipBehavior: Clip.none,
               children: [
-                AnimatedBuilder(
-                  animation: _controller,
-                  builder: (context, child) {
-                    return Transform.scale(
-                      scale: _iconScale.value,
-                      child: child,
-                    );
-                  },
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(22),
-                      onTap: _handleTap,
-                      child: Container(
-                        width: 56,
-                        height: 56,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: .12),
-                          borderRadius: BorderRadius.circular(22),
-                        ),
-                        child: Icon(
-                          widget.icon,
-                          color: AppColors.primary,
-                          size: 27,
-                        ),
+                SizedBox(
+                  width: 58,
+                  height: 58,
+                  child: ElevatedButton(
+                    onPressed: _handleTap,
+                    style: ElevatedButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      elevation: 0,
+                      backgroundColor: AppColors.primary.withValues(alpha: .12),
+                      foregroundColor: AppColors.primary,
+                      shadowColor: Colors.transparent,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(22),
                       ),
                     ),
+                    child: Icon(widget.icon, size: 27),
                   ),
                 ),
                 if (widget.amount != null)
-                  AnimatedBuilder(
-                    animation: _controller,
-                    builder: (context, child) {
-                      return Positioned(
-                        top: 2 + _bubbleMove.value,
-                        child: Opacity(
-                          opacity: _bubbleOpacity.value,
-                          child: child,
-                        ),
-                      );
-                    },
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.water_drop_rounded,
-                          color: AppColors.primary,
-                          size: 24,
-                        ),
-                        Text(
-                          '${widget.amount} ml',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.primary,
+                  Positioned(
+                    top: -4,
+                    child: IgnorePointer(
+                      child: FadeTransition(
+                        opacity: _feedbackOpacity,
+                        child: SlideTransition(
+                          position: _feedbackOffset,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 9,
+                              vertical: 5,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(999),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.primary.withValues(
+                                    alpha: .24,
+                                  ),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 6),
+                                ),
+                              ],
+                            ),
+                            child: Text(
+                              '+${widget.amount} ml',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
               ],
@@ -439,7 +429,7 @@ class _QuickAddItemState extends State<_QuickAddItem>
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w900,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: textColor,
             ),
           ),
           if (widget.amount != null)
@@ -466,7 +456,7 @@ class _AmountGridTile extends StatelessWidget {
 
   final IconData icon;
   final String title;
-  final void Function(BuildContext itemContext) onTap;
+  final Future<void> Function() onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -475,7 +465,11 @@ class _AmountGridTile extends StatelessWidget {
 
     return InkWell(
       borderRadius: BorderRadius.circular(20),
-      onTap: () => onTap(context),
+      onTap: () {
+        onTap().catchError((error) {
+          debugPrint('Amount tile error: $error');
+        });
+      },
       child: Container(
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF4FAFF),
