@@ -1,5 +1,6 @@
 import 'package:drinkly/app/app_shell.dart';
 import 'package:drinkly/features/reminders/application/notification_controller.dart';
+import 'package:drinkly/features/settings/presentation/screens/hydration_sources_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -661,7 +662,7 @@ class _ActivityPage extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                'Recommended Goal',
+                'Suggested Starting Goal',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w700,
@@ -675,6 +676,33 @@ class _ActivityPage extends StatelessWidget {
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
                   color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'A general starting estimate for tracking purposes. '
+                'Individual hydration needs vary.',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 12,
+                  height: 1.4,
+                  fontWeight: FontWeight.w600,
+                  color: secondaryTextColor,
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextButton.icon(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const HydrationSourcesScreen(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.menu_book_outlined, size: 18),
+                label: const Text(
+                  'Sources & health notice',
+                  style: TextStyle(fontWeight: FontWeight.w800),
                 ),
               ),
             ],

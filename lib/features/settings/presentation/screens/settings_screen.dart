@@ -1,4 +1,5 @@
 import 'package:drinkly/features/profile/presentation/screens/profile_screen.dart';
+import 'package:drinkly/features/settings/presentation/screens/hydration_sources_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -377,6 +378,19 @@ class _AboutGroup extends StatelessWidget {
             title: 'Terms of Service',
             value: '',
             onTap: onTermsTap,
+          ),
+          const _Divider(),
+          _SettingsTile(
+            icon: Icons.menu_book_outlined,
+            title: 'Hydration Sources',
+            value: '',
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const HydrationSourcesScreen(),
+                ),
+              );
+            },
           ),
           const _Divider(),
           const _VersionTile(),
