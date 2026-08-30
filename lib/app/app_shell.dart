@@ -14,7 +14,10 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
-  int _selectedIndex = 0;
+  int _selectedIndex = const int.fromEnvironment(
+    'SCREENSHOT_TAB',
+    defaultValue: 0,
+  ).clamp(0, 4);
 
   final _screens = const [
     HomeScreen(),
