@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_colors.dart';
-
 class PrimaryProgressBar extends StatelessWidget {
   const PrimaryProgressBar({super.key, required this.value, this.height = 12});
 
@@ -25,8 +23,10 @@ class PrimaryProgressBar extends StatelessWidget {
             minHeight: height,
             backgroundColor: isDark
                 ? const Color(0xFF334155)
-                : AppColors.primary.withValues(alpha: .10),
-            valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+                : Theme.of(context).colorScheme.primary.withValues(alpha: .10),
+            valueColor: AlwaysStoppedAnimation(
+              Theme.of(context).colorScheme.primary,
+            ),
           ),
         );
       },

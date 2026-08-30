@@ -3,9 +3,9 @@ import 'package:drinkly/shared/widgets/app_list_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../hydration/data/providers/hydration_providers.dart';
 import '../../../hydration/domain/models/hydration_entry_model.dart';
+import '../../../../shared/widgets/themed_screen_background.dart';
 
 class HistoryScreen extends ConsumerStatefulWidget {
   const HistoryScreen({super.key});
@@ -33,121 +33,123 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: entriesAsync.when(
-            data: (entries) {
-              final visibleEntries = _recentEntries(entries);
+      body: ThemedScreenBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: entriesAsync.when(
+              data: (entries) {
+                final visibleEntries = _recentEntries(entries);
 
-              final filteredEntries = visibleEntries.where((entry) {
-                if (searchText.isEmpty) return true;
+                final filteredEntries = visibleEntries.where((entry) {
+                  if (searchText.isEmpty) return true;
 
-                return entry.amountText.toLowerCase().contains(searchText) ||
-                    entry.timeText.toLowerCase().contains(searchText) ||
-                    _dayLabel(
-                      entry.createdAt,
-                    ).toLowerCase().contains(searchText);
-              }).toList();
+                  return entry.amountText.toLowerCase().contains(searchText) ||
+                      entry.timeText.toLowerCase().contains(searchText) ||
+                      _dayLabel(
+                        entry.createdAt,
+                      ).toLowerCase().contains(searchText);
+                }).toList();
 
-              final groupedEntries = _groupEntriesByDay(filteredEntries);
+                final groupedEntries = _groupEntriesByDay(filteredEntries);
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 12),
-                  Center(
-                    child: Text(
-                      'History',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w900,
-                        color: textColor,
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 12),
+                    Center(
+                      child: Text(
+                        'History',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.w900,
+                          color: textColor,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  _TextSearchField(
-                    controller: _searchController,
-                    onChanged: (_) => setState(() {}),
-                  ),
-                  const SizedBox(height: 24),
-                  if (entries.isEmpty)
-                    _EmptyHistory(
-                      secondaryTextColor: secondaryTextColor,
-                      message: 'No history yet.',
-                    )
-                  else if (filteredEntries.isEmpty)
-                    _EmptyHistory(
-                      secondaryTextColor: secondaryTextColor,
-                      message: 'No matching entries.',
-                    )
-                  else
-                    for (final group in groupedEntries.entries) ...[
-                      _DayHistoryCard(
-                        title: group.key,
-                        entries: group.value,
-                        expanded: _expandedDays.contains(group.key),
-                        onTap: () {
-                          setState(() {
-                            if (_expandedDays.contains(group.key)) {
-                              _expandedDays.remove(group.key);
-                            } else {
-                              _expandedDays.add(group.key);
-                            }
-                          });
-                        },
-                        onDelete: (entry) async {
-                          final repository = ref.read(
-                            hydrationRepositoryProvider,
-                          );
-                          final messenger = ScaffoldMessenger.of(context);
-
-                          await repository.deleteEntry(entry.id);
-
-                          if (!mounted) return;
-
-                          messenger
-                            ..clearSnackBars()
-                            ..showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 3),
-                                behavior: SnackBarBehavior.floating,
-                                content: const Text('Entry deleted'),
-                                action: SnackBarAction(
-                                  label: 'UNDO',
-                                  onPressed: () async {
-                                    messenger.clearSnackBars();
-
-                                    await repository.addWater(
-                                      amount: entry.amount,
-                                      createdAt: entry.createdAt,
-                                    );
-                                  },
-                                ),
-                              ),
+                    const SizedBox(height: 24),
+                    _TextSearchField(
+                      controller: _searchController,
+                      onChanged: (_) => setState(() {}),
+                    ),
+                    const SizedBox(height: 24),
+                    if (entries.isEmpty)
+                      _EmptyHistory(
+                        secondaryTextColor: secondaryTextColor,
+                        message: 'No history yet.',
+                      )
+                    else if (filteredEntries.isEmpty)
+                      _EmptyHistory(
+                        secondaryTextColor: secondaryTextColor,
+                        message: 'No matching entries.',
+                      )
+                    else
+                      for (final group in groupedEntries.entries) ...[
+                        _DayHistoryCard(
+                          title: group.key,
+                          entries: group.value,
+                          expanded: _expandedDays.contains(group.key),
+                          onTap: () {
+                            setState(() {
+                              if (_expandedDays.contains(group.key)) {
+                                _expandedDays.remove(group.key);
+                              } else {
+                                _expandedDays.add(group.key);
+                              }
+                            });
+                          },
+                          onDelete: (entry) async {
+                            final repository = ref.read(
+                              hydrationRepositoryProvider,
                             );
+                            final messenger = ScaffoldMessenger.of(context);
 
-                          Future.delayed(const Duration(seconds: 3), () {
+                            await repository.deleteEntry(entry.id);
+
                             if (!mounted) return;
-                            messenger.clearSnackBars();
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 14),
-                    ],
-                ],
-              );
-            },
-            loading: () => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(24),
-                child: CircularProgressIndicator(),
+
+                            messenger
+                              ..clearSnackBars()
+                              ..showSnackBar(
+                                SnackBar(
+                                  duration: const Duration(seconds: 3),
+                                  behavior: SnackBarBehavior.floating,
+                                  content: const Text('Entry deleted'),
+                                  action: SnackBarAction(
+                                    label: 'UNDO',
+                                    onPressed: () async {
+                                      messenger.clearSnackBars();
+
+                                      await repository.addWater(
+                                        amount: entry.amount,
+                                        createdAt: entry.createdAt,
+                                      );
+                                    },
+                                  ),
+                                ),
+                              );
+
+                            Future.delayed(const Duration(seconds: 3), () {
+                              if (!mounted) return;
+                              messenger.clearSnackBars();
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 14),
+                      ],
+                  ],
+                );
+              },
+              loading: () => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(24),
+                  child: CircularProgressIndicator(),
+                ),
               ),
-            ),
-            error: (error, stackTrace) => Text(
-              'Something went wrong: $error',
-              style: const TextStyle(color: Colors.red),
+              error: (error, stackTrace) => Text(
+                'Something went wrong: $error',
+                style: const TextStyle(color: Colors.red),
+              ),
             ),
           ),
         ),
@@ -223,7 +225,10 @@ class _TextSearchField extends StatelessWidget {
         onChanged: onChanged,
         style: TextStyle(color: textColor, fontWeight: FontWeight.w700),
         decoration: InputDecoration(
-          icon: const Icon(Icons.search_rounded, color: AppColors.primary),
+          icon: Icon(
+            Icons.search_rounded,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           hintText: 'Search history',
           hintStyle: TextStyle(
             color: secondaryTextColor,
@@ -277,12 +282,14 @@ class _DayHistoryCard extends StatelessWidget {
                   width: 52,
                   height: 52,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: .12),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: .12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.water_drop_rounded,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     size: 28,
                   ),
                 ),
@@ -313,10 +320,10 @@ class _DayHistoryCard extends StatelessWidget {
                 ),
                 Text(
                   Formatters.formatVolume(total),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -379,9 +386,9 @@ class _HistoryEntryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppListTile(
-      leading: const Icon(
+      leading: Icon(
         Icons.water_drop_outlined,
-        color: AppColors.primary,
+        color: Theme.of(context).colorScheme.primary,
         size: 28,
       ),
       title: entry.amountText,

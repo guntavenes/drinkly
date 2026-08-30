@@ -37,12 +37,14 @@ class AchievementsSummaryCard extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: .12),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: .12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.emoji_events_rounded,
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 size: 28,
               ),
             ),

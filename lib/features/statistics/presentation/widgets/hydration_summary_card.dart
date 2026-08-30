@@ -1,7 +1,6 @@
 import 'package:drinkly/core/utils/formatters.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
 
 class HydrationSummaryCard extends StatelessWidget {
@@ -31,10 +30,10 @@ class HydrationSummaryCard extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             Formatters.formatVolume(weeklyTotal),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 42,
               fontWeight: FontWeight.w900,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(height: 8),

@@ -83,7 +83,7 @@ class _AchievementRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = item.unlocked
-        ? AppColors.primary
+        ? Theme.of(context).colorScheme.primary
         : AppColors.lightTextSecondary.withValues(alpha: .45);
 
     return Row(

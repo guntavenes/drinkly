@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
 
 class InsightsCard extends StatelessWidget {
@@ -77,10 +76,14 @@ class _InsightRow extends StatelessWidget {
           width: 44,
           height: 44,
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: .12),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: .12),
             shape: BoxShape.circle,
           ),
-          child: Icon(icon, color: AppColors.primary, size: 22),
+          child: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.primary,
+            size: 22,
+          ),
         ),
         const SizedBox(width: 14),
         Expanded(

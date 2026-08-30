@@ -2,8 +2,8 @@ import 'package:drinkly/features/reminders/application/notification_controller.d
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
+import '../../../../shared/widgets/themed_screen_background.dart';
 import '../../../settings/data/providers/settings_providers.dart';
 
 class RemindersScreen extends ConsumerWidget {
@@ -45,55 +45,61 @@ class RemindersScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              _RemindersHeader(onBack: () => Navigator.pop(context)),
-              const SizedBox(height: 28),
-              GlassCard(
-                padding: EdgeInsets.zero,
-                borderRadius: 24,
-                child: Column(
-                  children: [
-                    _ReminderSwitchTile(
-                      value: remindersEnabled,
-                      onChanged: (value) async {
-                        await ref
-                            .read(notificationControllerProvider)
-                            .updateReminder(value);
-                      },
-                    ),
-                    const _Divider(),
-                    _ReminderTile(
-                      icon: Icons.schedule_rounded,
-                      title: 'Start Time',
-                      value: _formatTime(startHour, startMinute),
-                      onTap: () =>
-                          _pickStartTime(context, ref, startHour, startMinute),
-                    ),
-                    const _Divider(),
-                    _ReminderTile(
-                      icon: Icons.nights_stay_outlined,
-                      title: 'End Time',
-                      value: _formatTime(endHour, endMinute),
-                      onTap: () =>
-                          _pickEndTime(context, ref, endHour, endMinute),
-                    ),
-                    const _Divider(),
-                    _ReminderTile(
-                      icon: Icons.repeat_rounded,
-                      title: 'Repeat',
-                      value: _intervalText(intervalMinutes),
-                      onTap: () =>
-                          _showIntervalSheet(context, ref, intervalMinutes),
-                    ),
-                  ],
+      body: ThemedScreenBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                _RemindersHeader(onBack: () => Navigator.pop(context)),
+                const SizedBox(height: 28),
+                GlassCard(
+                  padding: EdgeInsets.zero,
+                  borderRadius: 24,
+                  child: Column(
+                    children: [
+                      _ReminderSwitchTile(
+                        value: remindersEnabled,
+                        onChanged: (value) async {
+                          await ref
+                              .read(notificationControllerProvider)
+                              .updateReminder(value);
+                        },
+                      ),
+                      const _Divider(),
+                      _ReminderTile(
+                        icon: Icons.schedule_rounded,
+                        title: 'Start Time',
+                        value: _formatTime(startHour, startMinute),
+                        onTap: () => _pickStartTime(
+                          context,
+                          ref,
+                          startHour,
+                          startMinute,
+                        ),
+                      ),
+                      const _Divider(),
+                      _ReminderTile(
+                        icon: Icons.nights_stay_outlined,
+                        title: 'End Time',
+                        value: _formatTime(endHour, endMinute),
+                        onTap: () =>
+                            _pickEndTime(context, ref, endHour, endMinute),
+                      ),
+                      const _Divider(),
+                      _ReminderTile(
+                        icon: Icons.repeat_rounded,
+                        title: 'Repeat',
+                        value: _intervalText(intervalMinutes),
+                        onTap: () =>
+                            _showIntervalSheet(context, ref, intervalMinutes),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -220,9 +226,9 @@ class RemindersScreen extends ConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.repeat_rounded,
-                            color: AppColors.primary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -236,9 +242,9 @@ class RemindersScreen extends ConsumerWidget {
                             ),
                           ),
                           if (interval == currentInterval)
-                            const Icon(
+                            Icon(
                               Icons.check_rounded,
-                              color: AppColors.primary,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                         ],
                       ),
@@ -267,9 +273,9 @@ class _ReminderSwitchTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
-          const Icon(
+          Icon(
             Icons.notifications_active_outlined,
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
           ),
           const SizedBox(width: 18),
           Expanded(
@@ -309,7 +315,7 @@ class _ReminderTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         child: Row(
           children: [
-            Icon(icon, color: AppColors.primary),
+            Icon(icon, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 18),
             Expanded(
               child: Text(

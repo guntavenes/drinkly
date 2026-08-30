@@ -6,9 +6,9 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_theme_style.dart';
 import '../../../../shared/widgets/glass_card.dart';
+import '../../../../shared/widgets/themed_screen_background.dart';
 import '../../../reminders/presentation/screens/reminders_screen.dart';
 import '../../data/providers/settings_providers.dart';
 
@@ -51,79 +51,83 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              Text(
-                'Settings',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  color: Theme.of(context).colorScheme.onSurface,
+      body: ThemedScreenBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                Text(
+                  'Settings',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w900,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 28),
-              _ProfileCard(
-                userName: userName,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ProfileScreen()),
-                  );
-                },
-              ),
-              const SizedBox(height: 20),
-              _SettingsGroup(
-                dailyGoal: dailyGoal,
-                remindersEnabled: remindersEnabled,
-                darkMode: darkMode,
-                themeStyle: themeStyle,
-                onDailyGoalTap: () {
-                  _showDailyGoalSheet(context, ref, dailyGoal);
-                },
-                onReminderTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const RemindersScreen()),
-                  );
-                },
-                onDarkModeChanged: (value) async {
-                  final repository = ref.read(settingsRepositoryProvider);
-                  await repository.updateDarkMode(value);
-                },
-                onThemeTap: () {
-                  _showThemeSheet(context, ref, themeStyle);
-                },
-              ),
-              const SizedBox(height: 20),
-              _AboutGroup(
-                onShareTap: () {
-                  final box = context.findRenderObject() as RenderBox?;
+                const SizedBox(height: 28),
+                _ProfileCard(
+                  userName: userName,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+                _SettingsGroup(
+                  dailyGoal: dailyGoal,
+                  remindersEnabled: remindersEnabled,
+                  darkMode: darkMode,
+                  themeStyle: themeStyle,
+                  onDailyGoalTap: () {
+                    _showDailyGoalSheet(context, ref, dailyGoal);
+                  },
+                  onReminderTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const RemindersScreen(),
+                      ),
+                    );
+                  },
+                  onDarkModeChanged: (value) async {
+                    final repository = ref.read(settingsRepositoryProvider);
+                    await repository.updateDarkMode(value);
+                  },
+                  onThemeTap: () {
+                    _showThemeSheet(context, ref, themeStyle);
+                  },
+                ),
+                const SizedBox(height: 20),
+                _AboutGroup(
+                  onShareTap: () {
+                    final box = context.findRenderObject() as RenderBox?;
 
-                  SharePlus.instance.share(
-                    ShareParams(
-                      text:
-                          '💧 I\'m using Drinkly to build a healthier hydration habit.\n\nDownload Drinkly:\nhttps://apps.apple.com/',
-                      sharePositionOrigin: box == null
-                          ? null
-                          : box.localToGlobal(Offset.zero) & box.size,
-                    ),
-                  );
-                },
-                onRateTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Available after App Store release'),
-                    ),
-                  );
-                },
-                onPrivacyTap: () => _openUrl(_privacyUrl),
-                onTermsTap: () => _openUrl(_termsUrl),
-              ),
-            ],
+                    SharePlus.instance.share(
+                      ShareParams(
+                        text:
+                            '💧 I\'m using Drinkly to build a healthier hydration habit.\n\nDownload Drinkly:\nhttps://apps.apple.com/',
+                        sharePositionOrigin: box == null
+                            ? null
+                            : box.localToGlobal(Offset.zero) & box.size,
+                      ),
+                    );
+                  },
+                  onRateTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Available after App Store release'),
+                      ),
+                    );
+                  },
+                  onPrivacyTap: () => _openUrl(_privacyUrl),
+                  onTermsTap: () => _openUrl(_termsUrl),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -270,9 +274,9 @@ class SettingsScreen extends ConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.flag_rounded,
-                            color: AppColors.primary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -286,9 +290,9 @@ class SettingsScreen extends ConsumerWidget {
                             ),
                           ),
                           if (goal == currentGoal)
-                            const Icon(
+                            Icon(
                               Icons.check_rounded,
-                              color: AppColors.primary,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                         ],
                       ),
@@ -326,12 +330,14 @@ class _ProfileCard extends StatelessWidget {
               width: 54,
               height: 54,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: .12),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: .12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.person_rounded,
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
                 size: 30,
               ),
             ),
@@ -654,7 +660,7 @@ class _SettingsTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
         child: Row(
           children: [
-            Icon(icon, color: AppColors.primary),
+            Icon(icon, color: Theme.of(context).colorScheme.primary),
             const SizedBox(width: 18),
             Expanded(
               child: Text(
@@ -701,7 +707,7 @@ class _SettingsSwitchTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Icon(icon, color: AppColors.primary),
+          Icon(icon, color: Theme.of(context).colorScheme.primary),
           const SizedBox(width: 18),
           Expanded(
             child: Text(

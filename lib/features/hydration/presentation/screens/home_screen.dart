@@ -241,9 +241,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         Navigator.pop(sheetContext);
                       }
                     },
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.flag_rounded,
-                      color: AppColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     title: Text(
                       '$goal ml',
@@ -253,9 +253,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     trailing: goal == currentGoal
-                        ? const Icon(
+                        ? Icon(
                             Icons.check_rounded,
-                            color: AppColors.primary,
+                            color: Theme.of(context).colorScheme.primary,
                           )
                         : Icon(
                             Icons.chevron_right_rounded,
@@ -314,7 +314,9 @@ class _GoalCompletedDialog extends StatelessWidget {
               width: 82,
               height: 82,
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: .12),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: .12),
                 shape: BoxShape.circle,
               ),
               child: const Center(
@@ -348,7 +350,7 @@ class _GoalCompletedDialog extends StatelessWidget {
               height: 52,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   elevation: 0,
                   shape: RoundedRectangleBorder(

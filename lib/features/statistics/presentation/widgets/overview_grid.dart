@@ -1,7 +1,6 @@
 import 'package:drinkly/core/utils/formatters.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
 
 class OverviewGrid extends StatelessWidget {
@@ -93,7 +92,7 @@ class OverviewCard extends StatelessWidget {
         borderRadius: 22,
         child: Row(
           children: [
-            Icon(icon, color: AppColors.primary, size: 26),
+            Icon(icon, color: Theme.of(context).colorScheme.primary, size: 26),
             const SizedBox(width: 12),
             Flexible(
               child: Column(

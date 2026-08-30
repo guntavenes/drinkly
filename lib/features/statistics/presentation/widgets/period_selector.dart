@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../data/providers/statistics_providers.dart';
 import '../../domain/models/statistics_period.dart';
 
@@ -70,7 +69,9 @@ class _PeriodItem extends ConsumerWidget {
           duration: const Duration(milliseconds: 220),
           curve: Curves.easeOut,
           decoration: BoxDecoration(
-            color: selected ? AppColors.primary : Colors.transparent,
+            color: selected
+                ? Theme.of(context).colorScheme.primary
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(13),
           ),
           child: Center(

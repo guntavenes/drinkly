@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../../core/theme/app_colors.dart';
-
 class QuickAddSection extends StatelessWidget {
   const QuickAddSection({
     super.key,
@@ -290,7 +288,7 @@ class QuickAddSection extends StatelessWidget {
                     height: 54,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(

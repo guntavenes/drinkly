@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
+import '../../../../shared/widgets/themed_screen_background.dart';
 import '../../../settings/data/providers/settings_providers.dart';
 
 class ProfileScreen extends ConsumerStatefulWidget {
@@ -50,85 +50,92 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            children: [
-              const SizedBox(height: 12),
-              _Header(onBack: () => Navigator.pop(context)),
-              const SizedBox(height: 28),
-              const _AvatarCard(),
-              const SizedBox(height: 20),
-              GlassCard(
-                borderRadius: 28,
-                padding: EdgeInsets.zero,
-                child: Column(
-                  children: [
-                    _InputRow(
-                      title: 'Name',
-                      hint: 'Your name',
-                      controller: _nameController,
-                    ),
-                    const _Divider(),
-                    _InputRow(
-                      title: 'Weight',
-                      hint: '75',
-                      suffix: 'kg',
-                      controller: _weightController,
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    ),
-                    const _Divider(),
-                    _ActivitySelector(
-                      selected: _activityLevel,
-                      onChanged: (value) {
-                        setState(() => _activityLevel = value);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              _RecommendedGoalCard(goal: recommendedGoal),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 56,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(22),
-                    ),
-                  ),
-                  onPressed: () async {
-                    final repository = ref.read(settingsRepositoryProvider);
-                    final weight = int.tryParse(_weightController.text);
-
-                    await repository.updateProfile(
-                      userName: _nameController.text.trim().isEmpty
-                          ? null
-                          : _nameController.text.trim(),
-                      weightKg: weight,
-                      activityLevel: _activityLevel,
-                    );
-
-                    await repository.updateDailyGoal(recommendedGoal);
-
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: const Text(
-                    'Save Changes',
-                    style: TextStyle(fontWeight: FontWeight.w900, fontSize: 16),
+      body: ThemedScreenBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              children: [
+                const SizedBox(height: 12),
+                _Header(onBack: () => Navigator.pop(context)),
+                const SizedBox(height: 28),
+                const _AvatarCard(),
+                const SizedBox(height: 20),
+                GlassCard(
+                  borderRadius: 28,
+                  padding: EdgeInsets.zero,
+                  child: Column(
+                    children: [
+                      _InputRow(
+                        title: 'Name',
+                        hint: 'Your name',
+                        controller: _nameController,
+                      ),
+                      const _Divider(),
+                      _InputRow(
+                        title: 'Weight',
+                        hint: '75',
+                        suffix: 'kg',
+                        controller: _weightController,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                      ),
+                      const _Divider(),
+                      _ActivitySelector(
+                        selected: _activityLevel,
+                        onChanged: (value) {
+                          setState(() => _activityLevel = value);
+                        },
+                      ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                _RecommendedGoalCard(goal: recommendedGoal),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                    ),
+                    onPressed: () async {
+                      final repository = ref.read(settingsRepositoryProvider);
+                      final weight = int.tryParse(_weightController.text);
+
+                      await repository.updateProfile(
+                        userName: _nameController.text.trim().isEmpty
+                            ? null
+                            : _nameController.text.trim(),
+                        weightKg: weight,
+                        activityLevel: _activityLevel,
+                      );
+
+                      await repository.updateDailyGoal(recommendedGoal);
+
+                      if (context.mounted) {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text(
+                      'Save Changes',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -215,12 +222,14 @@ class _AvatarCard extends StatelessWidget {
             width: 58,
             height: 58,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: .12),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: .12),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.water_drop_rounded,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               size: 32,
             ),
           ),
@@ -389,12 +398,12 @@ class _ActivityChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.primary.withValues(alpha: .14)
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: .14)
                 : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(18),
             border: Border.all(
               color: selected
-                  ? AppColors.primary.withValues(alpha: .45)
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: .45)
                   : Theme.of(context).dividerColor,
             ),
           ),
@@ -407,7 +416,9 @@ class _ActivityChip extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
-                  color: selected ? AppColors.primary : secondaryTextColor,
+                  color: selected
+                      ? Theme.of(context).colorScheme.primary
+                      : secondaryTextColor,
                 ),
               ),
             ],
@@ -437,12 +448,14 @@ class _RecommendedGoalCard extends StatelessWidget {
             width: 54,
             height: 54,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: .12),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: .12),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.auto_awesome_rounded,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
               size: 28,
             ),
           ),
@@ -462,10 +475,10 @@ class _RecommendedGoalCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   '$goal ml/day',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.w900,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                   ),
                 ),
                 const SizedBox(height: 4),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_colors.dart';
-
 class SectionHeader extends StatelessWidget {
   const SectionHeader({
     super.key,
@@ -38,7 +36,7 @@ class SectionHeader extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
-                color: AppColors.primary,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
           ),

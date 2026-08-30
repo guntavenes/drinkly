@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
+import '../../../../shared/widgets/themed_screen_background.dart';
 import '../../data/providers/achievement_providers.dart';
 import '../../domain/models/achievement_model.dart';
 
@@ -23,50 +23,52 @@ class AchievementsScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-              Center(
-                child: Text(
-                  'Achievements',
+      body: ThemedScreenBackground(
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 12),
+                Center(
+                  child: Text(
+                    'Achievements',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                    ),
+                  ),
+                ).animate().fadeIn(duration: 350.ms).slideY(begin: -.08),
+                const SizedBox(height: 28),
+                _OverallProgressCard(
+                  unlockedCount: unlockedCount,
+                  totalCount: achievements.length,
+                  progress: progress,
+                ).animate().fadeIn(duration: 400.ms).slideY(begin: .08),
+                const SizedBox(height: 24),
+                Text(
+                  'All Achievements',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 18,
                     fontWeight: FontWeight.w900,
                     color: textColor,
                   ),
                 ),
-              ).animate().fadeIn(duration: 350.ms).slideY(begin: -.08),
-              const SizedBox(height: 28),
-              _OverallProgressCard(
-                unlockedCount: unlockedCount,
-                totalCount: achievements.length,
-                progress: progress,
-              ).animate().fadeIn(duration: 400.ms).slideY(begin: .08),
-              const SizedBox(height: 24),
-              Text(
-                'All Achievements',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  color: textColor,
-                ),
-              ),
-              const SizedBox(height: 16),
-              for (var i = 0; i < achievements.length; i++) ...[
-                _AchievementTile(
-                      data: achievements[i],
-                      secondaryTextColor: secondaryTextColor,
-                    )
-                    .animate(delay: (70 * i).ms)
-                    .fadeIn(duration: 350.ms)
-                    .slideY(begin: .08),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
+                for (var i = 0; i < achievements.length; i++) ...[
+                  _AchievementTile(
+                        data: achievements[i],
+                        secondaryTextColor: secondaryTextColor,
+                      )
+                      .animate(delay: (70 * i).ms)
+                      .fadeIn(duration: 350.ms)
+                      .slideY(begin: .08),
+                  const SizedBox(height: 12),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
@@ -102,12 +104,14 @@ class _OverallProgressCard extends StatelessWidget {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: .12),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: .12),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.emoji_events_rounded,
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   size: 26,
                 ),
               ),
@@ -124,10 +128,10 @@ class _OverallProgressCard extends StatelessWidget {
               ),
               Text(
                 '${(progress * 100).round()}%',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
             ],
@@ -135,10 +139,10 @@ class _OverallProgressCard extends StatelessWidget {
           const SizedBox(height: 18),
           Text(
             '$unlockedCount / $totalCount unlocked',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.w900,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(height: 12),
@@ -152,8 +156,12 @@ class _OverallProgressCard extends StatelessWidget {
                 return LinearProgressIndicator(
                   value: value,
                   minHeight: 10,
-                  backgroundColor: AppColors.primary.withValues(alpha: .10),
-                  valueColor: const AlwaysStoppedAnimation(AppColors.primary),
+                  backgroundColor: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: .10),
+                  valueColor: AlwaysStoppedAnimation(
+                    Theme.of(context).colorScheme.primary,
+                  ),
                 );
               },
             ),
@@ -187,7 +195,7 @@ class _AchievementTile extends StatelessWidget {
     final textColor = Theme.of(context).colorScheme.onSurface;
 
     final color = data.unlocked
-        ? AppColors.primary
+        ? Theme.of(context).colorScheme.primary
         : secondaryTextColor.withValues(alpha: .55);
 
     return GlassCard(

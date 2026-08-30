@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
 import '../../../settings/data/providers/settings_providers.dart';
 
@@ -219,7 +218,7 @@ class _OnboardingBottomBar extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: .08),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: .08),
             blurRadius: 28,
             offset: const Offset(0, -12),
           ),
@@ -259,10 +258,12 @@ class _OnboardingBottomBar extends StatelessWidget {
             child: ElevatedButton(
               onPressed: onNext,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
                 elevation: 8,
-                shadowColor: AppColors.primary.withValues(alpha: .28),
+                shadowColor: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: .28),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(18),
                 ),
@@ -325,7 +326,7 @@ class _StepProgress extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: isCompleted || isCurrent
-                      ? AppColors.primary
+                      ? Theme.of(context).colorScheme.primary
                       : inactiveColor,
                   border: isCurrent
                       ? Border.all(color: Theme.of(context).cardColor, width: 3)
@@ -338,7 +339,7 @@ class _StepProgress extends StatelessWidget {
                     duration: const Duration(milliseconds: 220),
                     height: 3,
                     color: index < currentPage
-                        ? AppColors.primary
+                        ? Theme.of(context).colorScheme.primary
                         : inactiveColor,
                   ),
                 ),
@@ -530,7 +531,7 @@ class _ErrorOrTip extends StatelessWidget {
             ? Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.error_outline_rounded,
                     color: Colors.redAccent,
                     size: 18,
@@ -548,9 +549,9 @@ class _ErrorOrTip extends StatelessWidget {
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.auto_awesome_rounded,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     size: 18,
                   ),
                   const SizedBox(width: 6),
@@ -583,10 +584,10 @@ class _OnboardingIcon extends StatelessWidget {
       width: 104,
       height: 104,
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: .08),
+        color: Theme.of(context).colorScheme.primary.withValues(alpha: .08),
         shape: BoxShape.circle,
       ),
-      child: Icon(icon, color: AppColors.primary, size: 48),
+      child: Icon(icon, color: Theme.of(context).colorScheme.primary, size: 48),
     );
   }
 }
@@ -672,10 +673,10 @@ class _ActivityPage extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 '$recommendedGoal ml/day',
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               ),
               const SizedBox(height: 10),
@@ -740,12 +741,12 @@ class _ActivityChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 18),
           decoration: BoxDecoration(
             color: selected
-                ? AppColors.primary.withValues(alpha: .14)
+                ? Theme.of(context).colorScheme.primary.withValues(alpha: .14)
                 : Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
               color: selected
-                  ? AppColors.primary.withValues(alpha: .45)
+                  ? Theme.of(context).colorScheme.primary.withValues(alpha: .45)
                   : Theme.of(context).dividerColor,
             ),
           ),
@@ -758,7 +759,9 @@ class _ActivityChip extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w900,
-                  color: selected ? AppColors.primary : secondaryTextColor,
+                  color: selected
+                      ? Theme.of(context).colorScheme.primary
+                      : secondaryTextColor,
                 ),
               ),
             ],
@@ -928,8 +931,8 @@ class _FloatingTextInputState extends State<_FloatingTextInput> {
     final borderColor = widget.hasError
         ? Colors.redAccent
         : _focusNode.hasFocus
-        ? AppColors.primary
-        : AppColors.primary.withValues(alpha: .18);
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.primary.withValues(alpha: .18);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
@@ -945,7 +948,7 @@ class _FloatingTextInputState extends State<_FloatingTextInput> {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(
+            color: Theme.of(context).colorScheme.primary.withValues(
               alpha: _focusNode.hasFocus ? .09 : .05,
             ),
             blurRadius: _focusNode.hasFocus ? 30 : 24,
@@ -969,7 +972,7 @@ class _FloatingTextInputState extends State<_FloatingTextInput> {
                 fontWeight: FontWeight.w700,
                 color: _isActive
                     ? (_focusNode.hasFocus
-                          ? AppColors.primary
+                          ? Theme.of(context).colorScheme.primary
                           : secondaryTextColor)
                     : textColor.withValues(alpha: .22),
               ),
@@ -993,7 +996,7 @@ class _FloatingTextInputState extends State<_FloatingTextInput> {
                 fontWeight: FontWeight.w900,
                 color: textColor,
               ),
-              cursorColor: AppColors.primary,
+              cursorColor: Theme.of(context).colorScheme.primary,
               decoration: const InputDecoration(
                 border: InputBorder.none,
                 isDense: true,
@@ -1055,8 +1058,8 @@ class _WeightFloatingInputState extends State<_WeightFloatingInput> {
     final borderColor = widget.hasError
         ? Colors.redAccent
         : _focusNode.hasFocus
-        ? AppColors.primary
-        : AppColors.primary.withValues(alpha: .18);
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).colorScheme.primary.withValues(alpha: .18);
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 180),
@@ -1072,7 +1075,7 @@ class _WeightFloatingInputState extends State<_WeightFloatingInput> {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(
+            color: Theme.of(context).colorScheme.primary.withValues(
               alpha: _focusNode.hasFocus ? .09 : .05,
             ),
             blurRadius: _focusNode.hasFocus ? 30 : 24,
@@ -1094,7 +1097,7 @@ class _WeightFloatingInputState extends State<_WeightFloatingInput> {
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                   color: _focusNode.hasFocus
-                      ? AppColors.primary
+                      ? Theme.of(context).colorScheme.primary
                       : secondaryTextColor,
                 ),
                 child: const Text('Weight'),
@@ -1120,7 +1123,7 @@ class _WeightFloatingInputState extends State<_WeightFloatingInput> {
                       fontWeight: FontWeight.w900,
                       color: textColor,
                     ),
-                    cursorColor: AppColors.primary,
+                    cursorColor: Theme.of(context).colorScheme.primary,
                     decoration: InputDecoration(
                       counterText: '',
                       hintStyle: TextStyle(

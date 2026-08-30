@@ -2,7 +2,6 @@ import 'package:drinkly/core/utils/formatters.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/glass_card.dart';
 import '../../domain/models/statistics_period.dart';
 
@@ -30,7 +29,10 @@ class WeeklyChartCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.bar_chart_rounded, color: AppColors.primary),
+              Icon(
+                Icons.bar_chart_rounded,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(width: 8),
               Text(
                 _title(),
@@ -83,7 +85,8 @@ class WeeklyChartCard extends StatelessWidget {
                 barTouchData: BarTouchData(
                   enabled: true,
                   touchTooltipData: BarTouchTooltipData(
-                    getTooltipColor: (_) => AppColors.primary,
+                    getTooltipColor: (_) =>
+                        Theme.of(context).colorScheme.primary,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       final realAmount = values[group.x.toInt()];
 
@@ -108,8 +111,10 @@ class WeeklyChartCard extends StatelessWidget {
                         width: _barWidth(),
                         borderRadius: BorderRadius.circular(8),
                         color: index == _activeIndex()
-                            ? AppColors.primary
-                            : AppColors.primary.withValues(alpha: .35),
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(
+                                context,
+                              ).colorScheme.primary.withValues(alpha: .35),
                       ),
                     ],
                   );

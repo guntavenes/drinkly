@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_colors.dart';
-
 class AppIconCircle extends StatelessWidget {
   const AppIconCircle({super.key, required this.icon, required this.onTap});
 
@@ -27,19 +25,27 @@ class AppIconCircle extends StatelessWidget {
             border: Border.all(
               color: isDark
                   ? const Color(0xFF334155)
-                  : AppColors.primary.withValues(alpha: .12),
+                  : Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: .12),
             ),
             boxShadow: [
               BoxShadow(
                 color: isDark
                     ? Colors.black.withValues(alpha: .28)
-                    : AppColors.primary.withValues(alpha: .08),
+                    : Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: .08),
                 blurRadius: 18,
                 offset: const Offset(0, 10),
               ),
             ],
           ),
-          child: Icon(icon, color: AppColors.primary, size: 28),
+          child: Icon(
+            icon,
+            color: Theme.of(context).colorScheme.primary,
+            size: 28,
+          ),
         ),
       ),
     );

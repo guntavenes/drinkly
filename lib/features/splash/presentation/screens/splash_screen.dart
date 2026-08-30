@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../../../app/app_shell.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../onboarding/presentation/screens/onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -82,12 +81,14 @@ class _SplashScreenState extends State<SplashScreen>
                   width: 108,
                   height: 108,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: .12),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withValues(alpha: .12),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.water_drop_rounded,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     size: 64,
                   ),
                 ),
