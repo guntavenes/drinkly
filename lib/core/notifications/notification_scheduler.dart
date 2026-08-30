@@ -72,8 +72,16 @@ class NotificationScheduler {
 
     await NotificationService.instance.plugin.zonedSchedule(
       id,
-      NotificationMessages.randomTitle(now: time),
-      NotificationMessages.randomBody(now: time),
+      NotificationMessages.smartTitle(
+        todayTotal: todayTotal,
+        dailyGoal: dailyGoal,
+        now: time,
+      ),
+      NotificationMessages.smartBody(
+        todayTotal: todayTotal,
+        dailyGoal: dailyGoal,
+        now: time,
+      ),
       scheduledDate,
       const NotificationDetails(
         android: AndroidNotificationDetails(

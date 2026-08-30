@@ -7,6 +7,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_theme_style.dart';
 import '../../../../shared/widgets/glass_card.dart';
 import '../../../reminders/presentation/screens/reminders_screen.dart';
 import '../../data/providers/settings_providers.dart';
@@ -43,6 +44,11 @@ class SettingsScreen extends ConsumerWidget {
       orElse: () => false,
     );
 
+    final themeStyle = settingsAsync.maybeWhen(
+      data: (settings) => AppThemeStyle.fromStorage(settings?.themeStyle),
+      orElse: () => AppThemeStyle.ocean,
+    );
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -74,6 +80,7 @@ class SettingsScreen extends ConsumerWidget {
                 dailyGoal: dailyGoal,
                 remindersEnabled: remindersEnabled,
                 darkMode: darkMode,
+                themeStyle: themeStyle,
                 onDailyGoalTap: () {
                   _showDailyGoalSheet(context, ref, dailyGoal);
                 },
@@ -86,6 +93,9 @@ class SettingsScreen extends ConsumerWidget {
                 onDarkModeChanged: (value) async {
                   final repository = ref.read(settingsRepositoryProvider);
                   await repository.updateDarkMode(value);
+                },
+                onThemeTap: () {
+                  _showThemeSheet(context, ref, themeStyle);
                 },
               ),
               const SizedBox(height: 20),
@@ -123,6 +133,82 @@ class SettingsScreen extends ConsumerWidget {
   Future<void> _openUrl(String url) async {
     final uri = Uri.parse(url);
     await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  void _showThemeSheet(
+    BuildContext context,
+    WidgetRef ref,
+    AppThemeStyle selectedStyle,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        final textColor = Theme.of(sheetContext).colorScheme.onSurface;
+        final secondaryTextColor = textColor.withValues(alpha: .58);
+
+        return Material(
+          color: Theme.of(sheetContext).cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          child: SafeArea(
+            top: false,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 42,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Theme.of(sheetContext).dividerColor,
+                      borderRadius: BorderRadius.circular(999),
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  Text(
+                    'Choose your theme',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                      letterSpacing: -.7,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    'Make Drinkly feel like yours.',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                  const SizedBox(height: 22),
+                  for (final style in AppThemeStyle.values) ...[
+                    _ThemeOption(
+                      style: style,
+                      selected: style == selectedStyle,
+                      onTap: () async {
+                        final repository = ref.read(settingsRepositoryProvider);
+                        await repository.updateThemeStyle(style.name);
+
+                        if (sheetContext.mounted) {
+                          Navigator.pop(sheetContext);
+                        }
+                      },
+                    ),
+                    if (style != AppThemeStyle.values.last)
+                      const SizedBox(height: 10),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void _showDailyGoalSheet(
@@ -287,17 +373,21 @@ class _SettingsGroup extends StatelessWidget {
     required this.dailyGoal,
     required this.remindersEnabled,
     required this.darkMode,
+    required this.themeStyle,
     required this.onDailyGoalTap,
     required this.onReminderTap,
     required this.onDarkModeChanged,
+    required this.onThemeTap,
   });
 
   final int dailyGoal;
   final bool remindersEnabled;
   final bool darkMode;
+  final AppThemeStyle themeStyle;
   final VoidCallback onDailyGoalTap;
   final VoidCallback onReminderTap;
   final ValueChanged<bool> onDarkModeChanged;
+  final VoidCallback onThemeTap;
 
   @override
   Widget build(BuildContext context) {
@@ -320,6 +410,13 @@ class _SettingsGroup extends StatelessWidget {
             onTap: onReminderTap,
           ),
           const _Divider(),
+          _SettingsTile(
+            icon: Icons.palette_outlined,
+            title: 'App Theme',
+            value: themeStyle.label,
+            onTap: onThemeTap,
+          ),
+          const _Divider(),
           _SettingsSwitchTile(
             icon: Icons.dark_mode_outlined,
             title: 'Dark Mode',
@@ -327,6 +424,117 @@ class _SettingsGroup extends StatelessWidget {
             onChanged: onDarkModeChanged,
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ThemeOption extends StatelessWidget {
+  const _ThemeOption({
+    required this.style,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final AppThemeStyle style;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = Theme.of(context).colorScheme.onSurface;
+    final secondaryTextColor = textColor.withValues(alpha: .58);
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(22),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: selected
+              ? style.primary.withValues(alpha: .09)
+              : Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(
+            color: selected
+                ? style.primary.withValues(alpha: .55)
+                : Theme.of(context).dividerColor,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 54,
+              height: 54,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: style.heroGradient,
+                ),
+                borderRadius: BorderRadius.circular(17),
+                boxShadow: [
+                  BoxShadow(
+                    color: style.primary.withValues(alpha: .22),
+                    blurRadius: 16,
+                    offset: const Offset(0, 7),
+                  ),
+                ],
+              ),
+              child: const Icon(
+                Icons.water_drop_rounded,
+                color: Colors.white,
+                size: 23,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    style.label,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    style.description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              width: 25,
+              height: 25,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: selected ? style.primary : Colors.transparent,
+                border: Border.all(
+                  color: selected ? style.primary : secondaryTextColor,
+                ),
+              ),
+              child: selected
+                  ? const Icon(
+                      Icons.check_rounded,
+                      size: 16,
+                      color: Colors.white,
+                    )
+                  : null,
+            ),
+          ],
+        ),
       ),
     );
   }

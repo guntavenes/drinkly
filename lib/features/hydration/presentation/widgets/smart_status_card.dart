@@ -23,44 +23,85 @@ class SmartStatusCard extends StatelessWidget {
 
     final message = _message(progress, remaining);
     final icon = _icon(progress);
+    final accentColor = _accentColor(
+      progress,
+      Theme.of(context).colorScheme.primary,
+    );
 
     return GlassCard(
-      borderRadius: 24,
-      padding: const EdgeInsets.all(18),
+      borderRadius: 26,
+      padding: const EdgeInsets.all(16),
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: .12),
-              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  accentColor.withValues(alpha: .18),
+                  accentColor.withValues(alpha: .07),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(17),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 26),
+            child: Icon(icon, color: accentColor, size: 24),
           ),
           const SizedBox(width: 14),
           Expanded(
-            child: Text(
-              message,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w800,
-                color: textColor,
-                height: 1.35,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  progress >= 1 ? 'DAILY GOAL' : 'SMART INSIGHT',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w900,
+                    color: accentColor,
+                    letterSpacing: 1.1,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  message,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: textColor,
+                    height: 1.35,
+                  ),
+                ),
+              ],
             ),
           ),
-          Text(
-            progress >= 1 ? 'Done' : '${(progress * 100).round()}%',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w900,
-              color: progress >= 1 ? AppColors.primary : secondaryTextColor,
+          const SizedBox(width: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+            decoration: BoxDecoration(
+              color: accentColor.withValues(alpha: .09),
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              progress >= 1 ? 'Done' : '${(progress * 100).round()}%',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w900,
+                color: progress >= 1 ? accentColor : secondaryTextColor,
+              ),
             ),
           ),
         ],
       ),
     );
+  }
+
+  Color _accentColor(double progress, Color primaryColor) {
+    if (progress >= 1) return AppColors.success;
+    if (progress >= .75) return const Color(0xFFFF8A3D);
+    if (progress >= .4) return primaryColor;
+    return AppColors.accent;
   }
 
   IconData _icon(double progress) {

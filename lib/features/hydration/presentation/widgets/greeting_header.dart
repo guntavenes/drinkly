@@ -1,8 +1,6 @@
 import 'package:drinkly/features/reminders/presentation/screens/reminders_screen.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
-
 class GreetingHeader extends StatelessWidget {
   const GreetingHeader({super.key});
 
@@ -11,6 +9,7 @@ class GreetingHeader extends StatelessWidget {
     final textColor = Theme.of(context).colorScheme.onSurface;
     final secondaryTextColor = textColor.withValues(alpha: .58);
     final cardColor = Theme.of(context).cardColor;
+    final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Row(
       children: [
@@ -19,30 +18,22 @@ class GreetingHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${_greeting()} 👋',
+                _greeting().toUpperCase(),
                 style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
                   color: secondaryTextColor,
+                  letterSpacing: 1.25,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 7),
               Text(
-                'Stay Hydrated',
+                'Your hydration',
                 style: TextStyle(
-                  fontSize: 30,
+                  fontSize: 31,
                   fontWeight: FontWeight.w900,
                   color: textColor,
-                  letterSpacing: -0.8,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                'You\'ve got this!',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: secondaryTextColor,
+                  letterSpacing: -1.15,
                 ),
               ),
             ],
@@ -56,22 +47,25 @@ class GreetingHeader extends StatelessWidget {
             ).push(MaterialPageRoute(builder: (_) => const RemindersScreen()));
           },
           child: Container(
-            width: 56,
-            height: 56,
+            width: 50,
+            height: 50,
             decoration: BoxDecoration(
               color: cardColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(17),
+              border: Border.all(
+                color: Theme.of(context).dividerColor.withValues(alpha: .7),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withValues(alpha: .10),
-                  blurRadius: 18,
-                  offset: const Offset(0, 10),
+                  color: primaryColor.withValues(alpha: .10),
+                  blurRadius: 20,
+                  offset: const Offset(0, 8),
                 ),
               ],
             ),
-            child: const Icon(
+            child: Icon(
               Icons.notifications_none_rounded,
-              color: AppColors.primary,
+              color: primaryColor,
               size: 26,
             ),
           ),

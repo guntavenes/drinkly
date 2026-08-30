@@ -23,10 +23,10 @@ class SectionHeader extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 19,
             fontWeight: FontWeight.w900,
             color: textColor,
-            letterSpacing: -0.2,
+            letterSpacing: -0.45,
           ),
         ),
         const Spacer(),

@@ -1,9 +1,7 @@
 import 'package:drinkly/core/utils/formatters.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../shared/widgets/glass_card.dart';
-import '../../../../shared/widgets/primary_progress_bar.dart';
+import '../../../../core/theme/app_theme_style.dart';
 
 class TodayHydrationCard extends StatelessWidget {
   const TodayHydrationCard({
@@ -19,169 +17,217 @@ class TodayHydrationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).colorScheme.onSurface;
-    final secondaryTextColor = textColor.withValues(alpha: .58);
-
-    final progress = (currentAmount / dailyGoal).clamp(0.0, 1.0);
+    final themeStyle = Theme.of(context).extension<DrinklyTheme>()!.style;
+    final progress = dailyGoal <= 0
+        ? 0.0
+        : (currentAmount / dailyGoal).clamp(0.0, 1.0);
     final percent = (progress * 100).round();
     final remaining = (dailyGoal - currentAmount).clamp(0, dailyGoal);
 
-    return GlassCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Text(
-                'Today\'s Progress',
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800,
-                  color: textColor,
-                ),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: onEditGoal,
-                child: Text(
-                  'Edit Goal',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                    color: secondaryTextColor,
-                  ),
-                ),
+    return DefaultTextStyle(
+      style: const TextStyle(color: Colors.white),
+      child: IconTheme(
+        data: const IconThemeData(color: Colors.white),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(22),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: themeStyle.heroGradient,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: themeStyle.primary.withValues(alpha: .28),
+                blurRadius: 34,
+                offset: const Offset(0, 18),
               ),
             ],
           ),
-          const SizedBox(height: 18),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          child: Column(
             children: [
-              Text(
-                Formatters.formatAmount(currentAmount),
-                style: TextStyle(
-                  fontSize: 42,
-                  fontWeight: FontWeight.w900,
-                  color: textColor,
-                  letterSpacing: -1.4,
-                  height: 1,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4),
-                child: Text(
-                  'ml',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w800,
-                    color: textColor,
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 11,
+                      vertical: 7,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: .14),
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: .17),
+                      ),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.water_drop_rounded, size: 14),
+                        SizedBox(width: 6),
+                        Text(
+                          'TODAY',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w900,
+                            letterSpacing: 1.1,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
+                  const Spacer(),
+                  TextButton.icon(
+                    onPressed: onEditGoal,
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                    ),
+                    icon: const Icon(Icons.tune_rounded, size: 16),
+                    label: const Text(
+                      'Goal',
+                      style: TextStyle(fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ],
               ),
-              const Spacer(),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'You have consumed',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xD9FFFFFF),
+                          ),
+                        ),
+                        const SizedBox(height: 7),
+                        Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: Formatters.formatAmount(currentAmount),
+                                style: const TextStyle(
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: -1.8,
+                                  height: 1,
+                                ),
+                              ),
+                              const TextSpan(
+                                text: ' ml',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Text(
+                          remaining == 0
+                              ? 'Daily goal completed — great work!'
+                              : '${Formatters.formatAmount(remaining)} ml remaining today',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xD9FFFFFF),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: 104,
+                    height: 104,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        SizedBox.expand(
+                          child: CircularProgressIndicator(
+                            value: progress,
+                            strokeWidth: 9,
+                            strokeCap: StrokeCap.round,
+                            backgroundColor: Colors.white.withValues(
+                              alpha: .18,
+                            ),
+                            valueColor: const AlwaysStoppedAnimation(
+                              Colors.white,
+                            ),
+                          ),
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '$percent%',
+                              style: const TextStyle(
+                                fontSize: 23,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -.6,
+                              ),
+                            ),
+                            const Text(
+                              'of goal',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xCCFFFFFF),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 22),
               Container(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 7,
+                  horizontal: 14,
+                  vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFDFF8E8),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '$percent%',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: Color(0xFF22A447),
+                  color: Colors.white.withValues(alpha: .12),
+                  borderRadius: BorderRadius.circular(18),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: .14),
                   ),
                 ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.flag_rounded, size: 17),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Daily goal',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${Formatters.formatAmount(dailyGoal)} ml',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            'of ${Formatters.formatAmount(dailyGoal)} ml',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: secondaryTextColor,
-            ),
-          ),
-          const SizedBox(height: 18),
-          PrimaryProgressBar(value: progress),
-          const SizedBox(height: 18),
-          Row(
-            children: [
-              _MiniMetric(
-                icon: Icons.water_drop_outlined,
-                title: '${Formatters.formatAmount(remaining)} ml',
-                subtitle: 'left to reach your goal',
-              ),
-              const Spacer(),
-              _MiniMetric(
-                icon: Icons.flag_rounded,
-                title: '${Formatters.formatAmount(dailyGoal)} ml',
-                subtitle: 'Daily Goal',
-                alignEnd: true,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MiniMetric extends StatelessWidget {
-  const _MiniMetric({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    this.alignEnd = false,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool alignEnd;
-
-  @override
-  Widget build(BuildContext context) {
-    final textColor = Theme.of(context).colorScheme.onSurface;
-    final secondaryTextColor = textColor.withValues(alpha: .58);
-
-    return Row(
-      textDirection: alignEnd ? TextDirection.rtl : TextDirection.ltr,
-      children: [
-        Icon(icon, size: 22, color: AppColors.primary),
-        const SizedBox(width: 8),
-        Column(
-          crossAxisAlignment: alignEnd
-              ? CrossAxisAlignment.end
-              : CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w900,
-                color: textColor,
-              ),
-            ),
-            Text(
-              subtitle,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: secondaryTextColor,
-              ),
-            ),
-          ],
         ),
-      ],
+      ),
     );
   }
 }

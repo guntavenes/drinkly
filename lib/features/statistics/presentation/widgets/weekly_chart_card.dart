@@ -139,7 +139,7 @@ class WeeklyChartCard extends StatelessWidget {
       case StatisticsPeriod.week:
         return ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
       case StatisticsPeriod.month:
-        return ['W1', 'W2', 'W3', 'W4'];
+        return ['W1', 'W2', 'W3', 'W4', 'W5'];
       case StatisticsPeriod.year:
         return ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'];
     }
@@ -204,7 +204,7 @@ class WeeklyChartCard extends StatelessWidget {
       case StatisticsPeriod.week:
         return now.weekday - 1;
       case StatisticsPeriod.month:
-        return ((now.day - 1) / 7).floor().clamp(0, 3);
+        return ((now.day - 1) ~/ 7).clamp(0, 4);
       case StatisticsPeriod.year:
         return now.month - 1;
     }

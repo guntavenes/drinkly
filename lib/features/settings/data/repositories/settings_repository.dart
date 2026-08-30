@@ -63,6 +63,10 @@ class SettingsRepository {
     await _database.updateDarkMode(enabled);
   }
 
+  Future<void> updateThemeStyle(String style) async {
+    await _database.updateThemeStyle(style);
+  }
+
   Future<void> updateOnboardingCompleted(bool completed) async {
     await _database.updateOnboardingCompleted(completed);
   }

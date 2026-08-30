@@ -488,6 +488,18 @@ class $AppSettingsTable extends AppSettings
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _themeStyleMeta = const VerificationMeta(
+    'themeStyle',
+  );
+  @override
+  late final GeneratedColumn<String> themeStyle = GeneratedColumn<String>(
+    'theme_style',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('ocean'),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -505,6 +517,7 @@ class $AppSettingsTable extends AppSettings
     activityLevel,
     lastCelebratedDate,
     onboardingCompleted,
+    themeStyle,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -632,6 +645,12 @@ class $AppSettingsTable extends AppSettings
         ),
       );
     }
+    if (data.containsKey('theme_style')) {
+      context.handle(
+        _themeStyleMeta,
+        themeStyle.isAcceptableOrUnknown(data['theme_style']!, _themeStyleMeta),
+      );
+    }
     return context;
   }
 
@@ -701,6 +720,10 @@ class $AppSettingsTable extends AppSettings
         DriftSqlType.bool,
         data['${effectivePrefix}onboarding_completed'],
       )!,
+      themeStyle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}theme_style'],
+      )!,
     );
   }
 
@@ -726,6 +749,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
   final int activityLevel;
   final DateTime? lastCelebratedDate;
   final bool onboardingCompleted;
+  final String themeStyle;
   const AppSetting({
     required this.id,
     required this.dailyGoal,
@@ -742,6 +766,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     required this.activityLevel,
     this.lastCelebratedDate,
     required this.onboardingCompleted,
+    required this.themeStyle,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -767,6 +792,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       map['last_celebrated_date'] = Variable<DateTime>(lastCelebratedDate);
     }
     map['onboarding_completed'] = Variable<bool>(onboardingCompleted);
+    map['theme_style'] = Variable<String>(themeStyle);
     return map;
   }
 
@@ -793,6 +819,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ? const Value.absent()
           : Value(lastCelebratedDate),
       onboardingCompleted: Value(onboardingCompleted),
+      themeStyle: Value(themeStyle),
     );
   }
 
@@ -825,6 +852,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       onboardingCompleted: serializer.fromJson<bool>(
         json['onboardingCompleted'],
       ),
+      themeStyle: serializer.fromJson<String>(json['themeStyle']),
     );
   }
   @override
@@ -848,6 +876,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       'activityLevel': serializer.toJson<int>(activityLevel),
       'lastCelebratedDate': serializer.toJson<DateTime?>(lastCelebratedDate),
       'onboardingCompleted': serializer.toJson<bool>(onboardingCompleted),
+      'themeStyle': serializer.toJson<String>(themeStyle),
     };
   }
 
@@ -867,6 +896,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     int? activityLevel,
     Value<DateTime?> lastCelebratedDate = const Value.absent(),
     bool? onboardingCompleted,
+    String? themeStyle,
   }) => AppSetting(
     id: id ?? this.id,
     dailyGoal: dailyGoal ?? this.dailyGoal,
@@ -886,6 +916,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
         ? lastCelebratedDate.value
         : this.lastCelebratedDate,
     onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+    themeStyle: themeStyle ?? this.themeStyle,
   );
   AppSetting copyWithCompanion(AppSettingsCompanion data) {
     return AppSetting(
@@ -922,6 +953,9 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
       onboardingCompleted: data.onboardingCompleted.present
           ? data.onboardingCompleted.value
           : this.onboardingCompleted,
+      themeStyle: data.themeStyle.present
+          ? data.themeStyle.value
+          : this.themeStyle,
     );
   }
 
@@ -942,7 +976,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           ..write('weightKg: $weightKg, ')
           ..write('activityLevel: $activityLevel, ')
           ..write('lastCelebratedDate: $lastCelebratedDate, ')
-          ..write('onboardingCompleted: $onboardingCompleted')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
+          ..write('themeStyle: $themeStyle')
           ..write(')'))
         .toString();
   }
@@ -964,6 +999,7 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
     activityLevel,
     lastCelebratedDate,
     onboardingCompleted,
+    themeStyle,
   );
   @override
   bool operator ==(Object other) =>
@@ -983,7 +1019,8 @@ class AppSetting extends DataClass implements Insertable<AppSetting> {
           other.weightKg == this.weightKg &&
           other.activityLevel == this.activityLevel &&
           other.lastCelebratedDate == this.lastCelebratedDate &&
-          other.onboardingCompleted == this.onboardingCompleted);
+          other.onboardingCompleted == this.onboardingCompleted &&
+          other.themeStyle == this.themeStyle);
 }
 
 class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
@@ -1002,6 +1039,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
   final Value<int> activityLevel;
   final Value<DateTime?> lastCelebratedDate;
   final Value<bool> onboardingCompleted;
+  final Value<String> themeStyle;
   const AppSettingsCompanion({
     this.id = const Value.absent(),
     this.dailyGoal = const Value.absent(),
@@ -1018,6 +1056,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.activityLevel = const Value.absent(),
     this.lastCelebratedDate = const Value.absent(),
     this.onboardingCompleted = const Value.absent(),
+    this.themeStyle = const Value.absent(),
   });
   AppSettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -1035,6 +1074,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     this.activityLevel = const Value.absent(),
     this.lastCelebratedDate = const Value.absent(),
     this.onboardingCompleted = const Value.absent(),
+    this.themeStyle = const Value.absent(),
   });
   static Insertable<AppSetting> custom({
     Expression<int>? id,
@@ -1052,6 +1092,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Expression<int>? activityLevel,
     Expression<DateTime>? lastCelebratedDate,
     Expression<bool>? onboardingCompleted,
+    Expression<String>? themeStyle,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1073,6 +1114,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
         'last_celebrated_date': lastCelebratedDate,
       if (onboardingCompleted != null)
         'onboarding_completed': onboardingCompleted,
+      if (themeStyle != null) 'theme_style': themeStyle,
     });
   }
 
@@ -1092,6 +1134,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     Value<int>? activityLevel,
     Value<DateTime?>? lastCelebratedDate,
     Value<bool>? onboardingCompleted,
+    Value<String>? themeStyle,
   }) {
     return AppSettingsCompanion(
       id: id ?? this.id,
@@ -1110,6 +1153,7 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
       activityLevel: activityLevel ?? this.activityLevel,
       lastCelebratedDate: lastCelebratedDate ?? this.lastCelebratedDate,
       onboardingCompleted: onboardingCompleted ?? this.onboardingCompleted,
+      themeStyle: themeStyle ?? this.themeStyle,
     );
   }
 
@@ -1165,6 +1209,9 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
     if (onboardingCompleted.present) {
       map['onboarding_completed'] = Variable<bool>(onboardingCompleted.value);
     }
+    if (themeStyle.present) {
+      map['theme_style'] = Variable<String>(themeStyle.value);
+    }
     return map;
   }
 
@@ -1185,7 +1232,8 @@ class AppSettingsCompanion extends UpdateCompanion<AppSetting> {
           ..write('weightKg: $weightKg, ')
           ..write('activityLevel: $activityLevel, ')
           ..write('lastCelebratedDate: $lastCelebratedDate, ')
-          ..write('onboardingCompleted: $onboardingCompleted')
+          ..write('onboardingCompleted: $onboardingCompleted, ')
+          ..write('themeStyle: $themeStyle')
           ..write(')'))
         .toString();
   }
@@ -1406,6 +1454,7 @@ typedef $$AppSettingsTableCreateCompanionBuilder =
       Value<int> activityLevel,
       Value<DateTime?> lastCelebratedDate,
       Value<bool> onboardingCompleted,
+      Value<String> themeStyle,
     });
 typedef $$AppSettingsTableUpdateCompanionBuilder =
     AppSettingsCompanion Function({
@@ -1424,6 +1473,7 @@ typedef $$AppSettingsTableUpdateCompanionBuilder =
       Value<int> activityLevel,
       Value<DateTime?> lastCelebratedDate,
       Value<bool> onboardingCompleted,
+      Value<String> themeStyle,
     });
 
 class $$AppSettingsTableFilterComposer
@@ -1507,6 +1557,11 @@ class $$AppSettingsTableFilterComposer
 
   ColumnFilters<bool> get onboardingCompleted => $composableBuilder(
     column: $table.onboardingCompleted,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get themeStyle => $composableBuilder(
+    column: $table.themeStyle,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1594,6 +1649,11 @@ class $$AppSettingsTableOrderingComposer
     column: $table.onboardingCompleted,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get themeStyle => $composableBuilder(
+    column: $table.themeStyle,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$AppSettingsTableAnnotationComposer
@@ -1667,6 +1727,11 @@ class $$AppSettingsTableAnnotationComposer
     column: $table.onboardingCompleted,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get themeStyle => $composableBuilder(
+    column: $table.themeStyle,
+    builder: (column) => column,
+  );
 }
 
 class $$AppSettingsTableTableManager
@@ -1715,6 +1780,7 @@ class $$AppSettingsTableTableManager
                 Value<int> activityLevel = const Value.absent(),
                 Value<DateTime?> lastCelebratedDate = const Value.absent(),
                 Value<bool> onboardingCompleted = const Value.absent(),
+                Value<String> themeStyle = const Value.absent(),
               }) => AppSettingsCompanion(
                 id: id,
                 dailyGoal: dailyGoal,
@@ -1731,6 +1797,7 @@ class $$AppSettingsTableTableManager
                 activityLevel: activityLevel,
                 lastCelebratedDate: lastCelebratedDate,
                 onboardingCompleted: onboardingCompleted,
+                themeStyle: themeStyle,
               ),
           createCompanionCallback:
               ({
@@ -1749,6 +1816,7 @@ class $$AppSettingsTableTableManager
                 Value<int> activityLevel = const Value.absent(),
                 Value<DateTime?> lastCelebratedDate = const Value.absent(),
                 Value<bool> onboardingCompleted = const Value.absent(),
+                Value<String> themeStyle = const Value.absent(),
               }) => AppSettingsCompanion.insert(
                 id: id,
                 dailyGoal: dailyGoal,
@@ -1765,6 +1833,7 @@ class $$AppSettingsTableTableManager
                 activityLevel: activityLevel,
                 lastCelebratedDate: lastCelebratedDate,
                 onboardingCompleted: onboardingCompleted,
+                themeStyle: themeStyle,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

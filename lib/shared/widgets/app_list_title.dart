@@ -21,12 +21,12 @@ class AppListTile extends StatelessWidget {
     final secondaryTextColor = textColor.withValues(alpha: .58);
 
     return GlassCard(
-      padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-      borderRadius: 22,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+      borderRadius: 21,
       child: Row(
         children: [
           leading,
-          const SizedBox(width: 16),
+          const SizedBox(width: 13),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,15 +34,19 @@ class AppListTile extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
                     color: textColor,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(fontSize: 13, color: secondaryTextColor),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: secondaryTextColor,
+                  ),
                 ),
               ],
             ),
@@ -50,7 +54,7 @@ class AppListTile extends StatelessWidget {
           Text(
             trailing,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 12,
               fontWeight: FontWeight.w700,
               color: secondaryTextColor,
             ),

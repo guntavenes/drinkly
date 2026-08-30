@@ -2,7 +2,6 @@ import 'package:drinkly/shared/widgets/app_list_title.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_colors.dart';
 import '../../../../shared/widgets/section_header.dart';
 import '../../data/providers/hydration_providers.dart';
 import '../../domain/models/hydration_entry_model.dart';
@@ -17,7 +16,7 @@ class TodayActivitySection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SectionHeader(title: 'Today\'s Activity'),
+        const SectionHeader(title: 'Today\'s activity'),
         const SizedBox(height: 16),
         entriesAsync.when(
           data: (entries) {
@@ -57,11 +56,16 @@ class _ActivityEntryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
     return AppListTile(
-      leading: const Icon(
-        Icons.local_drink_outlined,
-        color: AppColors.primary,
-        size: 28,
+      leading: Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: primaryColor.withValues(alpha: .10),
+          borderRadius: BorderRadius.circular(15),
+        ),
+        child: Icon(Icons.water_drop_rounded, color: primaryColor, size: 21),
       ),
       title: entry.amountText,
       subtitle: 'Water',
@@ -78,26 +82,55 @@ class _EmptyActivity extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = Theme.of(context).colorScheme.onSurface;
     final secondaryTextColor = textColor.withValues(alpha: .58);
+    final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(22),
+      padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(26),
         border: Border.all(
-          color: isDark
-              ? const Color(0xFF334155)
-              : AppColors.primary.withValues(alpha: .08),
+          color: isDark ? const Color(0xFF334155) : const Color(0xFFE9EEF5),
         ),
       ),
-      child: Text(
-        'No water added yet. Start with a quick add.',
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: secondaryTextColor,
-        ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: .09),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(Icons.water_drop_outlined, color: primaryColor),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Your day starts here',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: textColor,
+                  ),
+                ),
+                const SizedBox(height: 3),
+                Text(
+                  'Add your first drink with a quick tap.',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: secondaryTextColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -17,40 +17,83 @@ class QuickAddSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).colorScheme.onSurface;
     final secondaryTextColor = textColor.withValues(alpha: .58);
+    final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Quick Add',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w800,
-            color: textColor,
-          ),
-        ),
-        const SizedBox(height: 14),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            for (final amount in amounts.take(3))
-              _QuickAddItem(
-                icon: Icons.water_drop_outlined,
-                label: '$amount',
-                amount: amount,
-                secondaryTextColor: secondaryTextColor,
-                onTap: () => onAddWater(amount),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Quick add',
+                    style: TextStyle(
+                      fontSize: 19,
+                      fontWeight: FontWeight.w900,
+                      color: textColor,
+                      letterSpacing: -.4,
+                    ),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    'Log a drink in one tap',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: secondaryTextColor,
+                    ),
+                  ),
+                ],
               ),
-            _QuickAddItem(
-              icon: Icons.add_rounded,
-              label: 'More',
-              amount: null,
-              secondaryTextColor: secondaryTextColor,
-              onTap: () async {
-                _showAddWaterSheet(context);
-              },
+            ),
+            Icon(
+              Icons.bolt_rounded,
+              size: 20,
+              color: primaryColor.withValues(alpha: .8),
             ),
           ],
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
+          decoration: BoxDecoration(
+            color: Theme.of(context).cardColor.withValues(alpha: .84),
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(color: Theme.of(context).dividerColor),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: .045),
+                blurRadius: 24,
+                offset: const Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              for (final amount in amounts.take(3))
+                _QuickAddItem(
+                  icon: Icons.water_drop_rounded,
+                  label: '$amount',
+                  amount: amount,
+                  secondaryTextColor: secondaryTextColor,
+                  onTap: () => onAddWater(amount),
+                ),
+              _QuickAddItem(
+                icon: Icons.add_rounded,
+                label: 'More',
+                amount: null,
+                secondaryTextColor: secondaryTextColor,
+                onTap: () async {
+                  _showAddWaterSheet(context);
+                },
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -351,34 +394,39 @@ class _QuickAddItemState extends State<_QuickAddItem>
   @override
   Widget build(BuildContext context) {
     final textColor = Theme.of(context).colorScheme.onSurface;
+    final primaryColor = Theme.of(context).colorScheme.primary;
 
     return SizedBox(
-      width: 72,
+      width: 70,
       child: Column(
         children: [
           SizedBox(
-            width: 72,
-            height: 78,
+            width: 70,
+            height: 66,
             child: Stack(
               alignment: Alignment.center,
               clipBehavior: Clip.none,
               children: [
                 SizedBox(
-                  width: 58,
-                  height: 58,
+                  width: 54,
+                  height: 54,
                   child: ElevatedButton(
                     onPressed: _handleTap,
                     style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
                       elevation: 0,
-                      backgroundColor: AppColors.primary.withValues(alpha: .12),
-                      foregroundColor: AppColors.primary,
+                      backgroundColor: widget.amount == null
+                          ? Theme.of(
+                              context,
+                            ).dividerColor.withValues(alpha: .55)
+                          : primaryColor.withValues(alpha: .11),
+                      foregroundColor: primaryColor,
                       shadowColor: Colors.transparent,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(22),
+                        borderRadius: BorderRadius.circular(18),
                       ),
                     ),
-                    child: Icon(widget.icon, size: 27),
+                    child: Icon(widget.icon, size: 24),
                   ),
                 ),
                 if (widget.amount != null)
@@ -395,13 +443,11 @@ class _QuickAddItemState extends State<_QuickAddItem>
                               vertical: 5,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.primary,
+                              color: primaryColor,
                               borderRadius: BorderRadius.circular(999),
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: .24,
-                                  ),
+                                  color: primaryColor.withValues(alpha: .24),
                                   blurRadius: 12,
                                   offset: const Offset(0, 6),
                                 ),
@@ -423,11 +469,11 @@ class _QuickAddItemState extends State<_QuickAddItem>
               ],
             ),
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 6),
           Text(
             widget.label,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 14,
               fontWeight: FontWeight.w900,
               color: textColor,
             ),
@@ -436,7 +482,7 @@ class _QuickAddItemState extends State<_QuickAddItem>
             Text(
               'ml',
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: widget.secondaryTextColor,
               ),
@@ -462,6 +508,7 @@ class _AmountGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final textColor = Theme.of(context).colorScheme.onSurface;
+    final primaryColor = Theme.of(context).colorScheme.primary;
 
     return InkWell(
       borderRadius: BorderRadius.circular(20),
@@ -474,12 +521,12 @@ class _AmountGridTile extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF4FAFF),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.primary.withValues(alpha: .12)),
+          border: Border.all(color: primaryColor.withValues(alpha: .12)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, color: AppColors.primary),
+            Icon(icon, color: primaryColor),
             const SizedBox(width: 8),
             Text(
               title,

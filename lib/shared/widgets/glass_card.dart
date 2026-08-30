@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/app_colors.dart';
-
 class GlassCard extends StatelessWidget {
   const GlassCard({
     super.key,
@@ -23,24 +21,24 @@ class GlassCard extends StatelessWidget {
       padding: padding,
       decoration: BoxDecoration(
         color: isDark
-            ? Theme.of(context).cardColor
-            : Colors.white.withValues(alpha: .92),
+            ? Theme.of(context).cardColor.withValues(alpha: .94)
+            : Colors.white.withValues(alpha: .96),
 
         borderRadius: BorderRadius.circular(borderRadius),
 
         border: Border.all(
           color: isDark
-              ? const Color(0xFF334155)
-              : Colors.white.withValues(alpha: .85),
+              ? Colors.white.withValues(alpha: .07)
+              : const Color(0xFFE9EEF5),
         ),
 
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withValues(alpha: .35)
-                : AppColors.primary.withValues(alpha: .10),
-            blurRadius: 28,
-            offset: const Offset(0, 16),
+                ? Colors.black.withValues(alpha: .24)
+                : const Color(0xFF102A43).withValues(alpha: .07),
+            blurRadius: 32,
+            offset: const Offset(0, 14),
           ),
         ],
       ),

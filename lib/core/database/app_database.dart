@@ -51,6 +51,8 @@ class AppSettings extends Table {
 
   BoolColumn get onboardingCompleted =>
       boolean().withDefault(const Constant(false))();
+
+  TextColumn get themeStyle => text().withDefault(const Constant('ocean'))();
 }
 
 @DriftDatabase(tables: [HydrationEntries, AppSettings])
@@ -58,7 +60,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 7;
 
   @override
   MigrationStrategy get migration {
@@ -94,6 +96,9 @@ class AppDatabase extends _$AppDatabase {
         if (from < 6) {
           await m.addColumn(appSettings, appSettings.onboardingCompleted);
         }
+        if (from < 7) {
+          await m.addColumn(appSettings, appSettings.themeStyle);
+        }
       },
     );
   }
@@ -108,7 +113,11 @@ class AppDatabase extends _$AppDatabase {
     final end = start.add(const Duration(days: 1));
 
     return (select(hydrationEntries)
-          ..where((tbl) => tbl.createdAt.isBetweenValues(start, end))
+          ..where(
+            (tbl) =>
+                tbl.createdAt.isBiggerOrEqualValue(start) &
+                tbl.createdAt.isSmallerThanValue(end),
+          )
           ..orderBy([
             (tbl) => OrderingTerm(
               expression: tbl.createdAt,
@@ -123,7 +132,11 @@ class AppDatabase extends _$AppDatabase {
     required DateTime end,
   }) {
     return (select(hydrationEntries)
-          ..where((tbl) => tbl.createdAt.isBetweenValues(start, end))
+          ..where(
+            (tbl) =>
+                tbl.createdAt.isBiggerOrEqualValue(start) &
+                tbl.createdAt.isSmallerThanValue(end),
+          )
           ..orderBy([
             (tbl) => OrderingTerm(
               expression: tbl.createdAt,
@@ -227,6 +240,12 @@ class AppDatabase extends _$AppDatabase {
     await update(
       appSettings,
     ).write(AppSettingsCompanion(darkMode: Value(enabled)));
+  }
+
+  Future<void> updateThemeStyle(String style) async {
+    await update(
+      appSettings,
+    ).write(AppSettingsCompanion(themeStyle: Value(style)));
   }
 
   Future<void> updateOnboardingCompleted(bool completed) async {

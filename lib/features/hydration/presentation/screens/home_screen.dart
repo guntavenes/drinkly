@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/theme/app_theme_style.dart';
 import '../../data/providers/hydration_providers.dart';
 import '../widgets/greeting_header.dart';
 import '../widgets/quick_add_section.dart';
@@ -41,6 +42,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeStyle = Theme.of(context).extension<DrinklyTheme>()!.style;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final currentAmount = ref.watch(todayHydrationTotalProvider);
     final settingsAsync = ref.watch(settingsProvider);
     final smartQuickAddAmounts = ref.watch(smartQuickAddAmountsProvider);
@@ -100,55 +103,79 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             width: double.infinity,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: Theme.of(context).brightness == Brightness.dark
-                    ? const [Color(0xFF0F172A), Color(0xFF020617)]
-                    : const [Color(0xFFEAF7FF), AppColors.lightBackground],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: isDark
+                    ? [
+                        Color.lerp(
+                          AppColors.darkBackground,
+                          themeStyle.primary,
+                          .13,
+                        )!,
+                        AppColors.darkBackground,
+                      ]
+                    : [
+                        Color.lerp(Colors.white, themeStyle.primary, .10)!,
+                        AppColors.lightBackground,
+                      ],
               ),
             ),
-            child: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const GreetingHeader(),
-                    const SizedBox(height: 28),
-                    TodayHydrationCard(
-                      currentAmount: currentAmount,
-                      dailyGoal: dailyGoal,
-                      onEditGoal: () {
-                        _showEditGoalSheet(context, ref, dailyGoal);
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    SmartStatusCard(
-                      currentAmount: currentAmount,
-                      dailyGoal: dailyGoal,
-                    ),
-                    const SizedBox(height: 28),
-                    QuickAddSection(
-                      amounts: quickAddAmounts,
-                      onAddWater: (amount) async {
-                        await HapticFeedback.lightImpact();
-
-                        final repository = ref.read(
-                          hydrationRepositoryProvider,
-                        );
-
-                        await repository.addWater(amount: amount);
-
-                        await ref
-                            .read(notificationControllerProvider)
-                            .refreshSchedule();
-                      },
-                    ),
-                    const SizedBox(height: 28),
-                    const TodayActivitySection(),
-                  ],
+            child: Stack(
+              children: [
+                Positioned(
+                  top: -90,
+                  right: -70,
+                  child: _AmbientGlow(size: 230, color: themeStyle.secondary),
                 ),
-              ),
+                Positioned(
+                  top: 360,
+                  left: -100,
+                  child: _AmbientGlow(size: 210, color: themeStyle.primary),
+                ),
+                SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const GreetingHeader(),
+                        const SizedBox(height: 24),
+                        TodayHydrationCard(
+                          currentAmount: currentAmount,
+                          dailyGoal: dailyGoal,
+                          onEditGoal: () {
+                            _showEditGoalSheet(context, ref, dailyGoal);
+                          },
+                        ),
+                        const SizedBox(height: 18),
+                        SmartStatusCard(
+                          currentAmount: currentAmount,
+                          dailyGoal: dailyGoal,
+                        ),
+                        const SizedBox(height: 30),
+                        QuickAddSection(
+                          amounts: quickAddAmounts,
+                          onAddWater: (amount) async {
+                            await HapticFeedback.lightImpact();
+
+                            final repository = ref.read(
+                              hydrationRepositoryProvider,
+                            );
+
+                            await repository.addWater(amount: amount);
+
+                            await ref
+                                .read(notificationControllerProvider)
+                                .refreshSchedule();
+                          },
+                        ),
+                        const SizedBox(height: 28),
+                        const TodayActivitySection(),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           ConfettiWidget(
@@ -240,6 +267,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class _AmbientGlow extends StatelessWidget {
+  const _AmbientGlow({required this.size, required this.color});
+
+  final double size;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: RadialGradient(
+            colors: [color.withValues(alpha: .17), color.withValues(alpha: 0)],
+          ),
+        ),
+      ),
     );
   }
 }
