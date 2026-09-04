@@ -23,8 +23,13 @@ class WidgetService {
   }) async {
     if (!Platform.isIOS) return;
 
+    final now = DateTime.now();
     await Future.wait([
       HomeWidget.saveWidgetData<int>('todayTotal', todayTotal),
+      HomeWidget.saveWidgetData<String>(
+        'totalDay',
+        '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}',
+      ),
       HomeWidget.saveWidgetData<int>('dailyGoal', dailyGoal),
       HomeWidget.saveWidgetData<String>('themeStyle', themeStyle),
       HomeWidget.saveWidgetData<String>(

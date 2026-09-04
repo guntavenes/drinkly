@@ -5,6 +5,22 @@ import WidgetKit
 private let appGroupId = "group.com.enesguntav.drinkly"
 private let widgetKind = "DrinklyWidget"
 
+// Share a local calendar-day key with Flutter. Never display or increment a
+// cached total from a different day (or an undated legacy cache).
+enum HydrationDay {
+    static func key(for date: Date, calendar: Calendar = .current) -> String {
+        let parts = calendar.dateComponents([.year, .month, .day], from: date)
+        return String(format: "%04d-%02d-%02d", parts.year!, parts.month!, parts.day!)
+    }
+
+    static func total(from defaults: UserDefaults?, at date: Date, calendar: Calendar = .current) -> Int {
+        guard defaults?.string(forKey: "totalDay") == key(for: date, calendar: calendar) else {
+            return 0
+        }
+        return defaults?.integer(forKey: "todayTotal") ?? 0
+    }
+}
+
 private struct HydrationEntry: TimelineEntry {
     let date: Date
     let total: Int
@@ -27,20 +43,26 @@ private struct HydrationProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<HydrationEntry>) -> Void) {
-        let entry = readEntry()
+        let now = Date()
+        let entry = readEntry(at: now)
         let nextMidnight = Calendar.current.nextDate(
-            after: .now,
+            after: now,
             matching: DateComponents(hour: 0, minute: 0),
             matchingPolicy: .nextTime
         ) ?? .now.addingTimeInterval(3600)
-        completion(Timeline(entries: [entry], policy: .after(nextMidnight)))
+        // A reload request is discretionary. Schedule the reset as an actual
+        // timeline entry as well, so it does not depend on launching the app.
+        let resetEntry = HydrationEntry(
+            date: nextMidnight, total: 0, goal: entry.goal, theme: entry.theme
+        )
+        completion(Timeline(entries: [entry, resetEntry], policy: .after(nextMidnight)))
     }
 
-    private func readEntry() -> HydrationEntry {
+    private func readEntry(at date: Date = .now) -> HydrationEntry {
         let defaults = UserDefaults(suiteName: appGroupId)
         return HydrationEntry(
-            date: .now,
-            total: defaults?.integer(forKey: "todayTotal") ?? 0,
+            date: date,
+            total: HydrationDay.total(from: defaults, at: date),
             goal: max(defaults?.integer(forKey: "dailyGoal") ?? 2500, 1),
             theme: defaults?.string(forKey: "themeStyle") ?? "ocean"
         )
@@ -67,8 +89,10 @@ struct AddWaterIntent: AppIntent {
             return .result()
         }
 
-        let currentTotal = defaults.integer(forKey: "todayTotal")
+        let now = Date()
+        let currentTotal = HydrationDay.total(from: defaults, at: now)
         defaults.set(currentTotal + amount, forKey: "todayTotal")
+        defaults.set(HydrationDay.key(for: now), forKey: "totalDay")
 
         var actions: [[String: Any]] = []
         if let raw = defaults.string(forKey: "pendingActions"),
@@ -79,7 +103,7 @@ struct AddWaterIntent: AppIntent {
 
         actions.append([
             "amount": amount,
-            "timestamp": ISO8601DateFormatter().string(from: .now)
+            "timestamp": ISO8601DateFormatter().string(from: now)
         ])
 
         if let data = try? JSONSerialization.data(withJSONObject: actions),
