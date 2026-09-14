@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:drinkly/features/splash/presentation/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,15 +20,21 @@ class DrinklyApp extends ConsumerStatefulWidget {
 
 class _DrinklyAppState extends ConsumerState<DrinklyApp>
     with WidgetsBindingObserver {
+  Timer? _watchSyncTimer;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _watchSyncTimer = Timer.periodic(const Duration(seconds: 2), (_) {
+      WidgetService.consumePendingActions(ref.read(appDatabaseProvider));
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _watchSyncTimer?.cancel();
     super.dispose();
   }
 

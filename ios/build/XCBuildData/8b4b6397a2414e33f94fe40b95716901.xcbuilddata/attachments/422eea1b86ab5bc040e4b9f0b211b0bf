@@ -1,0 +1,29 @@
+{
+  "" : {
+    "diagnostics" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatch-primary.dia",
+    "emit-module-dependencies" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatch-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatch-primary-emit-module.dia",
+    "pch" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatch-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatch-primary.swiftdeps"
+  },
+  "/Users/enesguntav/Dev/drinkly/ios/DrinklyWatch/DrinklyWatchApp.swift" : {
+    "const-values" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatchApp.swiftconstvalues",
+    "dependencies" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatchApp.d",
+    "diagnostics" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatchApp.dia",
+    "index-unit-output-path" : "/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatchApp.o",
+    "llvm-bc" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatchApp.bc",
+    "object" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatchApp.o",
+    "swift-dependencies" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatchApp.swiftdeps",
+    "swiftmodule" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/DrinklyWatchApp~partial.swiftmodule"
+  },
+  "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/enesguntav/Dev/drinkly/ios/build/Runner.build/Debug-watchos/DrinklyWatch.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

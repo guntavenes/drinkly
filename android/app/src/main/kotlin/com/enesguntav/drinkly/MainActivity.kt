@@ -1,4 +1,4 @@
-package com.example.drinkly
+package com.enesguntav.drinkly
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -10,10 +10,12 @@ class WidgetService {
 
   static const appGroupId = 'group.com.enesguntav.drinkly';
   static const widgetName = 'DrinklyWidget';
+  static bool _isConsumingActions = false;
 
   static Future<void> initialize() async {
-    if (!Platform.isIOS) return;
-    await HomeWidget.setAppGroupId(appGroupId);
+    if (Platform.isIOS) {
+      await HomeWidget.setAppGroupId(appGroupId);
+    }
   }
 
   static Future<void> sync({
@@ -21,7 +23,7 @@ class WidgetService {
     required int dailyGoal,
     required String themeStyle,
   }) async {
-    if (!Platform.isIOS) return;
+    if (!Platform.isIOS && !Platform.isAndroid) return;
 
     final now = DateTime.now();
     await Future.wait([
@@ -38,12 +40,27 @@ class WidgetService {
       ),
     ]);
 
-    await HomeWidget.updateWidget(iOSName: widgetName);
+    await HomeWidget.updateWidget(
+      iOSName: Platform.isIOS ? widgetName : null,
+      qualifiedAndroidName: Platform.isAndroid
+          ? 'com.enesguntav.drinkly.DrinklyWidgetProvider'
+          : null,
+    );
   }
 
   static Future<int> consumePendingActions(AppDatabase database) async {
-    if (!Platform.isIOS) return 0;
+    if (!Platform.isIOS && !Platform.isAndroid) return 0;
+    if (_isConsumingActions) return 0;
+    _isConsumingActions = true;
 
+    try {
+      return await _consumePendingActions(database);
+    } finally {
+      _isConsumingActions = false;
+    }
+  }
+
+  static Future<int> _consumePendingActions(AppDatabase database) async {
     final rawActions = await HomeWidget.getWidgetData<String>(
       'pendingActions',
       defaultValue: '[]',
@@ -57,6 +74,7 @@ class WidgetService {
     if (decoded is! List) return 0;
 
     var imported = 0;
+    final consumedKeys = <String>{};
     for (final item in decoded) {
       if (item is! Map) continue;
 
@@ -73,13 +91,41 @@ class WidgetService {
           createdAt: createdAt,
         ),
       );
+      consumedKeys.add(_actionKey(item));
       imported++;
     }
 
     if (imported > 0) {
-      await HomeWidget.saveWidgetData<String>('pendingActions', '[]');
+      final latestRaw = await HomeWidget.getWidgetData<String>(
+        'pendingActions',
+        defaultValue: '[]',
+      );
+      dynamic latest;
+      try {
+        latest = latestRaw == null ? null : jsonDecode(latestRaw);
+      } on FormatException {
+        latest = null;
+      }
+      if (latest is List) {
+        final remaining = latest
+            .where(
+              (item) =>
+                  item is! Map || !consumedKeys.contains(_actionKey(item)),
+            )
+            .toList();
+        await HomeWidget.saveWidgetData<String>(
+          'pendingActions',
+          jsonEncode(remaining),
+        );
+      }
     }
 
     return imported;
+  }
+
+  static String _actionKey(Map<dynamic, dynamic> item) {
+    final id = item['id'];
+    if (id is String && id.isNotEmpty) return id;
+    return '${item['amount']}|${item['timestamp']}';
   }
 }

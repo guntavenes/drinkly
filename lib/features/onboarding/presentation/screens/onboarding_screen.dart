@@ -412,8 +412,7 @@ class _NamePage extends StatelessWidget {
     final textColor = Theme.of(context).colorScheme.onSurface;
     final secondaryTextColor = textColor.withValues(alpha: .58);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return _KeyboardSafeOnboardingPage(
       children: [
         const _OnboardingIcon(icon: Icons.person_rounded),
         const SizedBox(height: 28),
@@ -472,8 +471,7 @@ class _WeightPage extends StatelessWidget {
     final textColor = Theme.of(context).colorScheme.onSurface;
     final secondaryTextColor = textColor.withValues(alpha: .58);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+    return _KeyboardSafeOnboardingPage(
       children: [
         const _OnboardingIcon(icon: Icons.monitor_weight_outlined),
         const SizedBox(height: 28),
@@ -507,6 +505,30 @@ class _WeightPage extends StatelessWidget {
           tip: 'Tip: You can change this later in settings.',
         ),
       ],
+    );
+  }
+}
+
+class _KeyboardSafeOnboardingPage extends StatelessWidget {
+  const _KeyboardSafeOnboardingPage({required this.children});
+
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: children,
+            ),
+          ),
+        );
+      },
     );
   }
 }

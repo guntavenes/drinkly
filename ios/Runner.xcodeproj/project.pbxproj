@@ -23,6 +23,9 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		A4310CD4BF864825AE74BF2B /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5505E4CA1D43955DE63A4A7C /* SwiftUI.framework */; };
+		AA0000000000000000000001 /* DrinklyWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000003 /* DrinklyWatchApp.swift */; };
+		AA0000000000000000000002 /* DrinklyWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000006 /* DrinklyWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA0000000000000000000013 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000014 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,6 +42,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = C3A1D4952001AC6839432DD2;
 			remoteInfo = DrinklyWidget;
+		};
+		AA000000000000000000000D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AA000000000000000000000C;
+			remoteInfo = DrinklyWatch;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -62,6 +72,17 @@
 			files = (
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA000000000000000000000A /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				AA0000000000000000000002 /* DrinklyWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -99,6 +120,11 @@
 		E76024A23AB1518B22AC449F /* DrinklyWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DrinklyWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		E9B613BD22CAD925A9EE4FBB /* AppIntents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppIntents.framework; path = System/Library/Frameworks/AppIntents.framework; sourceTree = SDKROOT; };
 		F25268BD114159F582DDEF21 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		AA0000000000000000000003 /* DrinklyWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrinklyWatchApp.swift; sourceTree = "<group>"; };
+		AA0000000000000000000004 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA0000000000000000000005 /* DrinklyWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DrinklyWatch.entitlements; sourceTree = "<group>"; };
+		AA0000000000000000000006 /* DrinklyWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DrinklyWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA0000000000000000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +152,13 @@
 				69C3602405143A696DE2E486 /* WidgetKit.framework in Frameworks */,
 				A4310CD4BF864825AE74BF2B /* SwiftUI.framework in Frameworks */,
 				133AB8F116825672459C51F5 /* AppIntents.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA0000000000000000000008 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +202,7 @@
 				FA1BF47685040DA45EB94378 /* Pods */,
 				EE99D9AC3B4DE6EBA101076D /* Frameworks */,
 				A692C22A75629F2716DEC818 /* DrinklyWidget */,
+				AA000000000000000000000B /* DrinklyWatch */,
 			);
 			sourceTree = "<group>";
 		};
@@ -178,6 +212,7 @@
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				331C8081294A63A400263BE5 /* RunnerTests.xctest */,
 				E76024A23AB1518B22AC449F /* DrinklyWidget.appex */,
+				AA0000000000000000000006 /* DrinklyWatch.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -207,6 +242,17 @@
 			);
 			name = DrinklyWidget;
 			path = DrinklyWidget;
+			sourceTree = "<group>";
+		};
+		AA000000000000000000000B /* DrinklyWatch */ = {
+			isa = PBXGroup;
+			children = (
+				AA0000000000000000000003 /* DrinklyWatchApp.swift */,
+				AA0000000000000000000004 /* Info.plist */,
+				AA0000000000000000000005 /* DrinklyWatch.entitlements */,
+				AA0000000000000000000014 /* Assets.xcassets */,
+			);
+			path = DrinklyWatch;
 			sourceTree = "<group>";
 		};
 		EE99D9AC3B4DE6EBA101076D /* Frameworks */ = {
@@ -268,6 +314,7 @@
 				97C146EC1CF9000F007C117D /* Resources */,
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				67D6825BD390E4C40A05B565 /* Embed App Extensions */,
+				AA000000000000000000000A /* Embed Watch Content */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				7194A9B678A51A96D107904B /* [CP] Embed Pods Frameworks */,
 			);
@@ -275,6 +322,7 @@
 			);
 			dependencies = (
 				3A6DDD51EDED215EF9C898E2 /* PBXTargetDependency */,
+				AA000000000000000000000E /* PBXTargetDependency */,
 			);
 			name = Runner;
 			productName = Runner;
@@ -298,6 +346,23 @@
 			productReference = E76024A23AB1518B22AC449F /* DrinklyWidget.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		AA000000000000000000000C /* DrinklyWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = AA0000000000000000000012 /* Build configuration list for PBXNativeTarget "DrinklyWatch" */;
+			buildPhases = (
+				AA0000000000000000000007 /* Sources */,
+				AA0000000000000000000008 /* Frameworks */,
+				AA0000000000000000000009 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DrinklyWatch;
+			productName = DrinklyWatch;
+			productReference = AA0000000000000000000006 /* DrinklyWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -315,6 +380,9 @@
 					97C146ED1CF9000F007C117D = {
 						CreatedOnToolsVersion = 7.3.1;
 						LastSwiftMigration = 1100;
+					};
+					AA000000000000000000000C = {
+						CreatedOnToolsVersion = 16.0;
 					};
 				};
 			};
@@ -334,6 +402,7 @@
 				97C146ED1CF9000F007C117D /* Runner */,
 				331C8080294A63A400263BE5 /* RunnerTests */,
 				C3A1D4952001AC6839432DD2 /* DrinklyWidget */,
+				AA000000000000000000000C /* DrinklyWatch */,
 			);
 		};
 /* End PBXProject section */
@@ -361,6 +430,14 @@
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AA0000000000000000000009 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000000000000000000013 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -488,6 +565,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA0000000000000000000007 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA0000000000000000000001 /* DrinklyWatchApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -501,6 +586,12 @@
 			name = DrinklyWidget;
 			target = C3A1D4952001AC6839432DD2 /* DrinklyWidget */;
 			targetProxy = 9DF1B70D4B85513BD378D816 /* PBXContainerItemProxy */;
+		};
+		AA000000000000000000000E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DrinklyWatch;
+			target = AA000000000000000000000C /* DrinklyWatch */;
+			targetProxy = AA000000000000000000000D /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -601,16 +692,17 @@
 		};
 		27CC8F2295F558954A9C35BD /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = DrinklyWidget/DrinklyWidget.entitlements;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = M89PUMUJJV;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = DrinklyWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.enesguntav.drinkly.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -673,16 +765,17 @@
 		};
 		5C12672F565DF4634CCBFFE9 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = DrinklyWidget/DrinklyWidget.entitlements;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = M89PUMUJJV;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = DrinklyWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.enesguntav.drinkly.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -852,16 +945,17 @@
 		};
 		EFDF4E1FB9FB7391B9437B5B /* Profile */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9740EEB31CF90195004384FC /* Generated.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CLANG_ENABLE_OBJC_WEAK = NO;
 				CODE_SIGN_ENTITLEMENTS = DrinklyWidget/DrinklyWidget.entitlements;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
 				DEVELOPMENT_TEAM = M89PUMUJJV;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = DrinklyWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
-				MARKETING_VERSION = 1.1.0;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
 				PRODUCT_BUNDLE_IDENTIFIER = com.enesguntav.drinkly.widget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -869,6 +963,77 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
+			};
+			name = Profile;
+		};
+		AA000000000000000000000F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DrinklyWatch/DrinklyWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = M89PUMUJJV;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DrinklyWatch/Info.plist;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.enesguntav.drinkly.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Debug;
+		};
+		AA0000000000000000000010 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DrinklyWatch/DrinklyWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = M89PUMUJJV;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DrinklyWatch/Info.plist;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.enesguntav.drinkly.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
+			};
+			name = Release;
+		};
+		AA0000000000000000000011 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = DrinklyWatch/DrinklyWatch.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEVELOPMENT_TEAM = M89PUMUJJV;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = DrinklyWatch/Info.plist;
+				MARKETING_VERSION = "$(FLUTTER_BUILD_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.enesguntav.drinkly.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SUPPORTED_PLATFORMS = "watchos watchsimulator";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Profile;
 		};
@@ -911,6 +1076,16 @@
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
 				249021D4217E4FDB00AE95B9 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		AA0000000000000000000012 /* Build configuration list for PBXNativeTarget "DrinklyWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				AA000000000000000000000F /* Debug */,
+				AA0000000000000000000010 /* Release */,
+				AA0000000000000000000011 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
